@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "src",
+    "target": "esnext",
+    "types": ["vite/client", "node"],
+    "module": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "moduleResolution": "node",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "plugins": [{ "name": "@rollup/plugin-typescript" }]
+  },
+  "include": ["src/**/*"],
+  "typedocOptions": {
+    "name": "month-range-picker - UI Documentation",
+    "excludeExternals": true,
+    "entryPoints": ["./src"],
+    "out": "docs/library",
+    "theme": "default"
+  }
+}

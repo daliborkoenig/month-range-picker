@@ -1,0 +1,14 @@
+iac/
+etc/
+shared/
+graphql/
+!public/
+public/*
+!public/locales
+!public/index.html
+!public/fonts.css
+docs/
+build/
+*.log
+*.lock
+__jsx
