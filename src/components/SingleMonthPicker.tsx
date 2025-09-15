@@ -47,26 +47,9 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
     hoveredMonth: null,
   });
 
-  // React to changes in defaultValue prop
-  useEffect(() => {
-    if (defaultValue) {
-      const parsedMonth = parseMonth(defaultValue);
-      if (parsedMonth) {
-        updatePickerState((draft) => {
-          draft.selection = parsedMonth;
-          // If not open, also update the viewYear
-          if (!picker.state.open) {
-            draft.viewYear = parsedMonth.year;
-          }
-        });
-      }
-    } else {
-      // If defaultValue is cleared, reset selection
-      updatePickerState((draft) => {
-        draft.selection = null;
-      });
-    }
-  }, [defaultValue, updatePickerState, picker.state.open]);
+  // We no longer need to react to defaultValue changes
+  // The component should maintain its own state once mounted
+  // defaultValue should only influence the initial state
 
   // Memoized values
   moment.locale(locale);

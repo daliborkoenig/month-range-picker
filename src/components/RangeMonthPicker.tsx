@@ -47,8 +47,18 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
   const currentYear = new Date().getFullYear();
 
   // Parse default values from strings if provided
-  const defaultFrom = defaultValue?.[0] ? parseMonth(defaultValue[0]) : null;
-  const defaultTo = defaultValue?.[1] ? parseMonth(defaultValue[1]) : null;
+  // Get the first and last values from the array if it has at least 2 elements
+  let defaultFrom = null;
+  let defaultTo = null;
+
+  if (defaultValue && defaultValue.length > 0) {
+    defaultFrom = parseMonth(defaultValue[0]);
+
+    if (defaultValue.length > 1) {
+      // Get the last item in the array
+      defaultTo = parseMonth(defaultValue[defaultValue.length - 1]);
+    }
+  }
 
   // Get view years from selection or default to current year
   const firstViewYear = defaultFrom?.year || currentYear;
@@ -67,47 +77,9 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
     step: "from",
   });
 
-  // React to changes in defaultValue prop
-  useEffect(() => {
-    if (defaultValue) {
-      const parsedFrom = defaultValue[0] ? parseMonth(defaultValue[0]) : null;
-      const parsedTo = defaultValue[1] ? parseMonth(defaultValue[1]) : null;
-
-      updatePickerState((draft) => {
-        draft.selection = [parsedFrom, parsedTo];
-
-        // If not open, also update the viewYears
-        if (!picker.state.open) {
-          // If both values are provided, use their years
-          if (parsedFrom && parsedTo) {
-            draft.viewYears = [parsedFrom.year, parsedTo.year];
-          }
-          // If only first value is provided
-          else if (parsedFrom) {
-            draft.viewYears = [parsedFrom.year, parsedFrom.year];
-          }
-          // If no values are provided, reset to current year
-          else {
-            draft.viewYears = [currentYear, currentYear];
-          }
-        }
-
-        // Reset step to "from" if selection is incomplete
-        if (!parsedTo) {
-          draft.step = "from";
-        }
-      });
-    } else {
-      // If defaultValue is cleared, reset selection
-      updatePickerState((draft) => {
-        draft.selection = [null, null];
-        if (!picker.state.open) {
-          draft.viewYears = [currentYear, currentYear];
-        }
-        draft.step = "from";
-      });
-    }
-  }, [defaultValue, updatePickerState, picker.state.open, currentYear]);
+  // We no longer need to react to defaultValue changes
+  // The component should maintain its own state once mounted
+  // defaultValue should only influence the initial state
 
   // Extend the closeWithAnimation to reset partial selection
   const handleClose = () => {

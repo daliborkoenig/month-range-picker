@@ -19,7 +19,7 @@ export type SharedMonthPickerProps = {
 // Props definition for range month picker
 export interface RangeMonthPickerProps extends SharedMonthPickerProps {
   onChange: (value: string[]) => void; // Array of all months in range, format: ["MM/YYYY", "MM/YYYY", ...]
-  defaultValue?: [string, string]; // format: ["MM/YYYY", "MM/YYYY"]
+  defaultValue?: string[]; // format: ["MM/YYYY", "MM/YYYY"]
   range: true;
 }
 

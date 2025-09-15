@@ -10,10 +10,15 @@ import { RangeMonthPicker } from "./RangeMonthPicker";
  * It renders either a SingleMonthPicker or RangeMonthPicker based on the `range` prop.
  */
 export const MonthPicker: FC<MonthPickerProps> = (props) => {
+  const key = props.defaultValue
+    ? props.range
+      ? props.defaultValue.join(",")
+      : props.defaultValue
+    : null;
   // Cast props to the appropriate type based on the range flag
   if (props.range) {
-    return <RangeMonthPicker {...props} />;
+    return <RangeMonthPicker key={key} {...props} />;
   } else {
-    return <SingleMonthPicker {...props} />;
+    return <SingleMonthPicker key={key} {...props} />;
   }
 };
