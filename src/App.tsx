@@ -14,9 +14,13 @@ function App() {
           width: "100%",
         }}
       >
-        <MonthRangePicker onChange={(value) => console.log("MonthPicker value", value)} />
+        <MonthRangePicker
+          disabledMonths={["01/2025", "02/2025"]}
+          onChange={(value) => console.log("MonthPicker value", value)}
+        />
         <MonthRangePicker
           range
+          disabledMonths={["01/2025", "02/2025"]}
           onChange={(value) => console.log("MonthRangePicker value", value)}
         />
       </div>

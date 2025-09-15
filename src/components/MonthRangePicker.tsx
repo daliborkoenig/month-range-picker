@@ -151,6 +151,7 @@ export function MonthRangePicker(props: MonthRangePickerProps) {
     step: "from",
   });
 
+  console.log("state", state);
   // Set up references
   const inputRef = useRef<HTMLInputElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -319,18 +320,20 @@ export function MonthRangePicker(props: MonthRangePickerProps) {
       } else {
         // Complete selection
         const newTo = { year, month };
-        updateState((draft) => {
-          draft.selection = [from, newTo];
-          draft.hoveredMonth = null;
-        });
 
-        // Process and return the selected range
+        // Determine chronological order
         const [first, second] =
           from && newTo
             ? ymIndex(from.year, from.month) <= ymIndex(newTo.year, newTo.month)
               ? [from, newTo]
               : [newTo, from]
             : [null, null];
+
+        updateState((draft) => {
+          // Store in chronological order
+          draft.selection = [first, second];
+          draft.hoveredMonth = null;
+        });
 
         if (first && second) {
           const f = formatMonth(first.month, first.year);
