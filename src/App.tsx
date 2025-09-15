@@ -15,16 +15,15 @@ function App() {
         }}
       >
         <MonthPicker
-          // disabledMonths={["01/2025", "02/2025"]}
+          disabledMonths={["01/2025", "02/2025"]}
           // selectableMonths={["03/2025", "04/2025"]}
           defaultValue={"03/2025"}
           onChange={(value) => console.log("MonthPicker value", value)}
         />
         <MonthPicker
           range
-          // disabledMonths={["01/2025", "02/2025"]}
           // selectableMonths={["03/2025", "04/2025"]}
-          defaultValue={["03/2025", "05/2027"]}
+          defaultValue={["12/2024", "05/2025"]}
           onChange={(value) => console.log("MonthRangePicker value", value)}
         />
       </div>

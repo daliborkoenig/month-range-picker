@@ -1,9 +1,8 @@
-import { useRef, useMemo, useEffect, useLayoutEffect, FC } from "react";
+import { useMemo, useEffect, FC } from "react";
 import { useImmer } from "use-immer";
-import _ from "lodash";
 import moment from "moment";
 import "moment/locale/de";
-import { MonthObject, SharedMonthPickerProps, ANIMATION_DURATION, CLOSE_DELAY } from "./types";
+import { MonthObject, SharedMonthPickerProps } from "./types";
 import {
   InputContainer,
   StyledInput,
@@ -20,20 +19,13 @@ import {
   MonthTile,
 } from "./styled-picker";
 import { getMonthsShort, formatMonth, isMonthDisabled, parseMonth } from "./picker-helper";
+import { useMonthPicker } from "./use-month-picker";
 
 // Props definition for single month picker
 export interface SingleMonthPickerProps extends SharedMonthPickerProps {
   onChange: (value: string) => void;
   defaultValue?: string; // format: "MM/YYYY"
-}
-
-// State definition for single month picker
-interface SingleMonthPickerState {
-  open: boolean;
-  animationState: "entering" | "visible" | "exiting" | "closed";
-  viewYear: number;
-  selection: MonthObject | null;
-  hoveredMonth: MonthObject | null;
+  disabledMonths?: string[]; // format: "MM/YYYY"
 }
 
 export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
@@ -48,10 +40,15 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
     defaultValue,
   } = props;
 
-  // Initialize state
-  const [state, updateState] = useImmer<SingleMonthPickerState>({
-    open: false,
-    animationState: "closed",
+  // Get shared picker functionality
+  const picker = useMonthPicker({ isRange: false });
+
+  // Initialize picker-specific state
+  const [pickerState, updatePickerState] = useImmer<{
+    viewYear: number;
+    selection: MonthObject | null;
+    hoveredMonth: MonthObject | null;
+  }>({
     viewYear: new Date().getFullYear(),
     selection: defaultValue ? parseMonth(defaultValue) : null,
     hoveredMonth: null,
@@ -62,26 +59,21 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
     if (defaultValue) {
       const parsedMonth = parseMonth(defaultValue);
       if (parsedMonth) {
-        updateState((draft) => {
+        updatePickerState((draft) => {
           draft.selection = parsedMonth;
           // If not open, also update the viewYear
-          if (!draft.open) {
+          if (!picker.state.open) {
             draft.viewYear = parsedMonth.year;
           }
         });
       }
     } else {
       // If defaultValue is cleared, reset selection
-      updateState((draft) => {
+      updatePickerState((draft) => {
         draft.selection = null;
       });
     }
-  }, [defaultValue, updateState]);
-
-  // Set up references
-  const inputRef = useRef<HTMLInputElement>(null);
-  const popupRef = useRef<HTMLDivElement>(null);
-  const inputContainerRef = useRef<HTMLDivElement>(null);
+  }, [defaultValue, updatePickerState, picker.state.open]);
 
   // Memoized values
   moment.locale(locale);
@@ -89,143 +81,14 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
 
   // Calculate input label
   const inputLabel = useMemo(() => {
-    const selected = state.selection;
+    const selected = pickerState.selection;
     if (!selected) return placeholder;
     return `${months[selected.month]} ${selected.year}`;
-  }, [state.selection, placeholder, months]);
+  }, [pickerState.selection, placeholder, months]);
 
-  // Animation timing
-  useEffect(() => {
-    let timeout: NodeJS.Timeout | null = null;
-
-    if (state.animationState === "entering") {
-      timeout = setTimeout(() => {
-        updateState((draft) => {
-          draft.animationState = "visible";
-        });
-      }, 10);
-    } else if (state.animationState === "exiting") {
-      timeout = setTimeout(() => {
-        updateState((draft) => {
-          draft.animationState = "closed";
-          draft.open = false;
-        });
-      }, ANIMATION_DURATION);
-    }
-
-    return () => {
-      if (timeout) clearTimeout(timeout);
-    };
-  }, [state.animationState, updateState]);
-
-  // Position calculation
-  const updatePosition = () => {
-    const input = inputRef.current;
-    const popup = popupRef.current;
-    const container = inputContainerRef.current;
-
-    if (!input || !popup || !container) return;
-
-    const rect = container.getBoundingClientRect();
-    const scrollLeft = window.scrollX;
-    const scrollTop = window.scrollY;
-
-    popup.style.width = "210px";
-    popup.style.top = `${rect.bottom + 8 + scrollTop}px`;
-    popup.style.left = `${rect.left + scrollLeft}px`;
-  };
-
-  useLayoutEffect(() => {
-    if (!state.open) return;
-    updatePosition();
-  }, [state.open]);
-
-  // Event handlers for positioning
-  useEffect(() => {
-    if (!state.open) return;
-
-    const handleResize = _.debounce(updatePosition, 100);
-    const handleScroll = _.debounce(updatePosition, 100);
-
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("scroll", handleScroll, true);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("scroll", handleScroll, true);
-      handleResize.cancel();
-      handleScroll.cancel();
-    };
-  }, [state.open]);
-
-  // Handle outside clicks
-  useEffect(() => {
-    if (!state.open) return;
-
-    const handleOutsideClick = (e: MouseEvent) => {
-      const target = e.target as Node;
-      if (
-        inputRef.current &&
-        !inputRef.current.contains(target) &&
-        popupRef.current &&
-        !popupRef.current.contains(target)
-      ) {
-        closeWithAnimation();
-      }
-    };
-
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, [state.open]);
-
-  // Handle ESC key press
-  useEffect(() => {
-    if (!state.open) return;
-
-    const handleEscKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        closeWithAnimation();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscKey);
-    return () => {
-      document.removeEventListener("keydown", handleEscKey);
-    };
-  }, [state.open]);
-
-  // Close with animation
-  const closeWithAnimation = () => {
-    updateState((draft) => {
-      draft.animationState = "exiting";
-    });
-
-    // Optional delay before actually closing
-    setTimeout(() => {
-      updateState((draft) => {
-        draft.open = false;
-        draft.animationState = "closed";
-      });
-    }, CLOSE_DELAY);
-  };
-
-  // Toggle open/close
-  const toggleOpen = () => {
-    if (state.open) {
-      closeWithAnimation();
-    } else {
-      updateState((draft) => {
-        draft.open = true;
-        draft.animationState = "entering";
-      });
-    }
-  };
-
-  // Clear selection
+  // Handle selection clearing
   const clearSelection = () => {
-    updateState((draft) => {
+    updatePickerState((draft) => {
       draft.selection = null;
       // Reset view year to current year on clear
       draft.viewYear = new Date().getFullYear();
@@ -235,69 +98,69 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
 
   // Handle month selection
   const handleSelectMonth = (year: number, month: number) => {
-    if (isMonthDisabled(year, month, disabledMonths, selectableMonths, minDate, maxDate)) {
+    if (isMonthDisabled({ year, month, disabledMonths, selectableMonths, minDate, maxDate })) {
       return;
     }
 
-    updateState((draft) => {
+    updatePickerState((draft) => {
       draft.selection = { year, month };
     });
 
     onChange(formatMonth(month, year));
-    closeWithAnimation();
+    picker.actions.closeWithAnimation();
   };
 
   // Handle hover for visualization
   const handleMonthHover = (year: number, month: number) => {
-    if (isMonthDisabled(year, month, disabledMonths, selectableMonths, minDate, maxDate)) {
+    if (isMonthDisabled({ year, month, disabledMonths, selectableMonths, minDate, maxDate })) {
       return;
     }
 
-    updateState((draft) => {
+    updatePickerState((draft) => {
       draft.hoveredMonth = { year, month };
     });
   };
 
   // Handle year change
   const handleYearChange = (newYear: number) => {
-    updateState((draft) => {
+    updatePickerState((draft) => {
       draft.viewYear = newYear;
     });
   };
 
   return (
-    <InputContainer ref={inputContainerRef}>
+    <InputContainer ref={picker.refs.containerRef}>
       <StyledInput
-        ref={inputRef}
+        ref={picker.refs.inputRef}
         readOnly
         placeholder={placeholder}
         value={inputLabel === placeholder ? "" : inputLabel}
-        onClick={toggleOpen}
+        onClick={picker.actions.toggleOpen}
         aria-haspopup="dialog"
-        aria-expanded={state.open}
+        aria-expanded={picker.state.open}
       />
 
-      {state.selection && (
+      {pickerState.selection && (
         <ClearButton onClick={clearSelection} aria-label="Clear selection">
           ✕
         </ClearButton>
       )}
 
-      {state.animationState !== "closed" && (
-        <Popup ref={popupRef} $animationState={state.animationState}>
+      {picker.state.animationState !== "closed" && (
+        <Popup ref={picker.refs.popupRef} $animationState={picker.state.animationState}>
           <Container>
             <PickerColumn>
               <YearCard>
                 <YearRow>
                   <ArrowButton
-                    onClick={() => handleYearChange(state.viewYear - 1)}
+                    onClick={() => handleYearChange(pickerState.viewYear - 1)}
                     aria-label="Previous year"
                   >
                     ‹
                   </ArrowButton>
-                  <YearText>{state.viewYear}</YearText>
+                  <YearText>{pickerState.viewYear}</YearText>
                   <ArrowButton
-                    onClick={() => handleYearChange(state.viewYear + 1)}
+                    onClick={() => handleYearChange(pickerState.viewYear + 1)}
                     aria-label="Next year"
                   >
                     ›
@@ -307,29 +170,30 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
               <MonthsCard>
                 <MonthsGrid>
                   {months.map((label, month) => {
-                    const isDisabled = isMonthDisabled(
-                      state.viewYear,
+                    const isDisabled = isMonthDisabled({
+                      year: pickerState.viewYear,
                       month,
                       disabledMonths,
                       selectableMonths,
                       minDate,
-                      maxDate
-                    );
+                      maxDate,
+                    });
 
                     const isActive =
-                      state.selection?.year === state.viewYear && state.selection?.month === month;
+                      pickerState.selection?.year === pickerState.viewYear &&
+                      pickerState.selection?.month === month;
 
                     const isHovered =
-                      state.hoveredMonth?.year === state.viewYear &&
-                      state.hoveredMonth?.month === month;
+                      pickerState.hoveredMonth?.year === pickerState.viewYear &&
+                      pickerState.hoveredMonth?.month === month;
 
                     return (
                       <MonthTile
-                        key={`${label}-${state.viewYear}`}
-                        onClick={() => handleSelectMonth(state.viewYear, month)}
-                        onMouseEnter={() => handleMonthHover(state.viewYear, month)}
+                        key={`${label}-${pickerState.viewYear}`}
+                        onClick={() => handleSelectMonth(pickerState.viewYear, month)}
+                        onMouseEnter={() => handleMonthHover(pickerState.viewYear, month)}
                         onMouseLeave={() => {
-                          updateState((draft) => {
+                          updatePickerState((draft) => {
                             draft.hoveredMonth = null;
                           });
                         }}

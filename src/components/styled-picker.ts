@@ -178,7 +178,7 @@ export const MonthTile = styled.button<{
     align-items: center;
     justify-content: center;
     opacity: ${$disabled ? 0.5 : 1};
-    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
     transform: scale(1);
 
     &:hover {

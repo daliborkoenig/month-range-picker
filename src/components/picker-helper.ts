@@ -53,14 +53,22 @@ export const parseMonth = (monthStr: string): MonthObject | null => {
 /**
  * Checks if a month is disabled based on various criteria
  */
-export const isMonthDisabled = (
-  year: number,
-  month: number,
-  disabledMonths?: string[],
-  selectableMonths?: string[],
-  minDate?: string,
-  maxDate?: string
-): boolean => {
+type IsMonthDisabledProps = {
+  year: number;
+  month: number;
+  disabledMonths?: string[];
+  selectableMonths?: string[];
+  minDate?: string;
+  maxDate?: string;
+};
+export const isMonthDisabled = ({
+  year,
+  month,
+  disabledMonths,
+  selectableMonths,
+  minDate,
+  maxDate,
+}: IsMonthDisabledProps): boolean => {
   const monthStr = formatMonth(month, year);
 
   // Check if month is in disabledMonths
@@ -99,14 +107,15 @@ export const ymIndex = (y: number, m: number) => y * 12 + m;
 /**
  * Checks if a month is in the selected range
  */
-export const isInRange = (
-  y: number,
-  m: number,
-  from: MonthObject | null,
-  to: MonthObject | null,
-  hoveredMonth: MonthObject | null,
-  step: "from" | "to"
-): boolean => {
+type IsInRangeProps = {
+  y: number;
+  m: number;
+  from: MonthObject | null;
+  to: MonthObject | null;
+  hoveredMonth: MonthObject | null;
+  step: "from" | "to";
+};
+export const isInRange = ({ y, m, from, to, hoveredMonth, step }: IsInRangeProps): boolean => {
   if (!from) return false;
 
   const current = ymIndex(y, m);

@@ -11,7 +11,6 @@ export const CLOSE_DELAY = 300; // in ms
 export type SharedMonthPickerProps = {
   placeholder?: string;
   locale?: "en" | "de";
-  disabledMonths?: string[]; // format: "MM/YYYY"
   selectableMonths?: string[]; // format: "MM/YYYY"
   minDate?: string; // format: "MM/YYYY"
   maxDate?: string; // format: "MM/YYYY"
@@ -28,5 +27,6 @@ export type MonthPickerProps = SharedMonthPickerProps &
         range?: false;
         onChange: (value: string) => void;
         defaultValue?: string; // format: "MM/YYYY"
+        disabledMonths?: string[]; // format: "MM/YYYY"
       }
   );
