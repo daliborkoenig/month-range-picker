@@ -286,7 +286,11 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
       )}
 
       {picker.state.animationState !== "closed" && (
-        <Popup ref={picker.refs.popupRef} $animationState={picker.state.animationState}>
+        <Popup
+          ref={picker.refs.popupRef}
+          $animationState={picker.state.animationState}
+          $range={true}
+        >
           <Container>
             <FlexRow>
               {renderMonthColumn(0)}

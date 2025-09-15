@@ -43,29 +43,34 @@ export const ClearButton = styled.button(() => {
   `;
 });
 
-export const Popup = styled.div<{ $animationState: AnimationState }>(({ $animationState }) => {
+export const Popup = styled.div<{
+  $animationState: AnimationState;
+  $range?: boolean;
+  $position?: { top: number; left: number };
+}>(({ $animationState, $range, $position }) => {
   return css`
-    position: fixed;
+    position: absolute;
     z-index: 1000;
-    opacity: ${(props) =>
-      $animationState === "entering"
-        ? "0"
-        : $animationState === "visible"
-        ? "1"
-        : $animationState === "exiting"
-        ? "0"
-        : "0"};
-    transform: ${(props) =>
-      $animationState === "entering"
-        ? "translateY(10px)"
-        : $animationState === "visible"
-        ? "translateY(0)"
-        : $animationState === "exiting"
-        ? "translateY(10px)"
-        : "translateY(10px)"};
+    opacity: ${$animationState === "entering"
+      ? "0"
+      : $animationState === "visible"
+      ? "1"
+      : $animationState === "exiting"
+      ? "0"
+      : "0"};
+    transform: ${$animationState === "entering"
+      ? "translateY(10px)"
+      : $animationState === "visible"
+      ? "translateY(0)"
+      : $animationState === "exiting"
+      ? "translateY(10px)"
+      : "translateY(10px)"};
     transition: all 300ms cubic-bezier(0.25, 0.1, 0.25, 1);
-    display: ${(props) => ($animationState === "closed" ? "none" : "block")};
+    display: ${$animationState === "closed" ? "none" : "block"};
     box-sizing: border-box;
+    width: ${$range ? "420px" : "210px"};
+    top: ${$position ? `${$position.top}px` : "calc(100% + 8px)"};
+    left: ${$position ? `${$position.left}px` : "0"};
   `;
 });
 

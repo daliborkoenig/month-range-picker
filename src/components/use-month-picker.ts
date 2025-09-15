@@ -1,6 +1,4 @@
-import { useRef, useEffect, useLayoutEffect } from "react";
-import { useImmer } from "use-immer";
-import _ from "lodash";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { ANIMATION_DURATION, CLOSE_DELAY } from "./types";
 
 export interface UseMonthPickerOptions {
@@ -24,10 +22,13 @@ export interface UseMonthPickerResult {
 }
 
 export const useMonthPicker = ({ isRange }: UseMonthPickerOptions): UseMonthPickerResult => {
-  // Create state for open/close and animation
-  const [state, updateState] = useImmer({
+  // Combined state for open/close and animation
+  const [state, setState] = useState<{
+    open: boolean;
+    animationState: "entering" | "visible" | "exiting" | "closed";
+  }>({
     open: false,
-    animationState: "closed" as "entering" | "visible" | "exiting" | "closed",
+    animationState: "closed",
   });
 
   // Set up references
@@ -35,72 +36,27 @@ export const useMonthPicker = ({ isRange }: UseMonthPickerOptions): UseMonthPick
   const popupRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Animation timing
-  useEffect(() => {
-    let timeout: NodeJS.Timeout | null = null;
+  // Close with animation
+  const closeWithAnimation = useCallback(() => {
+    setState((prev) => ({ ...prev, animationState: "exiting" }));
 
-    if (state.animationState === "entering") {
-      timeout = setTimeout(() => {
-        updateState((draft) => {
-          draft.animationState = "visible";
-        });
+    setTimeout(() => {
+      setState({ open: false, animationState: "closed" });
+    }, ANIMATION_DURATION);
+  }, []);
+
+  // Toggle open/close
+  const toggleOpen = useCallback(() => {
+    if (state.open) {
+      closeWithAnimation();
+    } else {
+      setState({ open: true, animationState: "entering" });
+      // Start entering animation
+      setTimeout(() => {
+        setState((prev) => ({ ...prev, animationState: "visible" }));
       }, 10);
-    } else if (state.animationState === "exiting") {
-      timeout = setTimeout(() => {
-        updateState((draft) => {
-          draft.animationState = "closed";
-          draft.open = false;
-        });
-      }, ANIMATION_DURATION);
     }
-
-    return () => {
-      if (timeout) clearTimeout(timeout);
-    };
-  }, [state.animationState, updateState]);
-
-  // Position calculation
-  const updatePosition = () => {
-    const input = inputRef.current;
-    const popup = popupRef.current;
-    const container = containerRef.current;
-
-    if (!input || !popup || !container) return;
-
-    const rect = container.getBoundingClientRect();
-    const scrollLeft = window.scrollX;
-    const scrollTop = window.scrollY;
-
-    // Make the popup wider only in range mode
-    const width = isRange ? "428px" : "210px";
-
-    popup.style.width = width;
-    popup.style.top = `${rect.bottom + 8 + scrollTop}px`;
-    popup.style.left = `${rect.left + scrollLeft}px`;
-  };
-
-  useLayoutEffect(() => {
-    if (!state.open) return;
-    updatePosition();
-  }, [state.open]);
-
-  // Event handlers for positioning
-  useEffect(() => {
-    if (!state.open) return;
-
-    const handleResize = _.debounce(updatePosition, 100);
-    const handleScroll = _.debounce(updatePosition, 100);
-
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("scroll", handleScroll, true);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("scroll", handleScroll, true);
-      handleResize.cancel();
-      handleScroll.cancel();
-    };
-  }, [state.open]);
+  }, [state.open, closeWithAnimation]);
 
   // Handle outside clicks
   useEffect(() => {
@@ -118,46 +74,21 @@ export const useMonthPicker = ({ isRange }: UseMonthPickerOptions): UseMonthPick
       }
     };
 
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, [state.open]);
-
-  // Handle ESC key press
-  useEffect(() => {
-    if (!state.open) return;
-
     const handleEscKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         closeWithAnimation();
       }
     };
 
+    // Add event listeners for both outside clicks and ESC key
+    document.addEventListener("mousedown", handleOutsideClick);
     document.addEventListener("keydown", handleEscKey);
+
     return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
       document.removeEventListener("keydown", handleEscKey);
     };
-  }, [state.open]);
-
-  // Close with animation
-  const closeWithAnimation = () => {
-    updateState((draft) => {
-      draft.animationState = "exiting";
-    });
-  };
-
-  // Toggle open/close
-  const toggleOpen = () => {
-    if (state.open) {
-      closeWithAnimation();
-    } else {
-      updateState((draft) => {
-        draft.open = true;
-        draft.animationState = "entering";
-      });
-    }
-  };
+  }, [state.open, closeWithAnimation]);
 
   return {
     state,

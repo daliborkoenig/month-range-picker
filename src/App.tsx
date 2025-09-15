@@ -18,7 +18,7 @@ function App() {
   const [selectedMonth, setSelectedMonth] = useState<string>(moment().format("MM/YYYY"));
   const [selectedRange, setSelectedRange] = useState<string[]>([
     moment().format("MM/YYYY"),
-    moment().add(1, "month").format("MM/YYYY"),
+    moment().add(14, "month").format("MM/YYYY"),
   ]);
   console.log("selectedMonth", selectedMonth);
   console.log("selectedRange", selectedRange);

@@ -123,7 +123,11 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
       )}
 
       {picker.state.animationState !== "closed" && (
-        <Popup ref={picker.refs.popupRef} $animationState={picker.state.animationState}>
+        <Popup
+          ref={picker.refs.popupRef}
+          $animationState={picker.state.animationState}
+          $range={false}
+        >
           <Container>
             <PickerColumn>
               <YearCard>
