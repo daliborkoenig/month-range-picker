@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { MonthPicker } from "./components/MonthPicker";
 import moment from "moment";
+import {
+  AppWrapper,
+  PickerCard,
+  PickerCardContent,
+  PickerCardSeparator,
+  PickerCardTitle,
+} from "./globalStyles";
 
 const styleText = {
   fontSize: "10px",
@@ -23,40 +30,31 @@ function App() {
   console.log("selectedMonth", selectedMonth);
   console.log("selectedRange", selectedRange);
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column" as const,
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "16px",
-        backgroundColor: "#ffffff",
-        width: "100%",
-      }}
-    >
-      <div style={styleFlex}>
-        <div>
-          <span style={styleText}>Single Month Picker - no default value</span>
+    <AppWrapper>
+      <PickerCard>
+        <PickerCardTitle size="medium">Single Month Picker</PickerCardTitle>
+        <PickerCardContent>
+          <PickerCardTitle>Single Month Picker - no default value</PickerCardTitle>
           <MonthPicker
             onChange={(value) => {
               console.log("MonthPicker no default value", value);
               setSelectedMonth(value);
             }}
           />
-        </div>
-        <div>
-          <span style={styleText}>Single Month Picker - default value</span>
+        </PickerCardContent>
+        <PickerCardContent>
+          <PickerCardTitle>Single Month Picker - default value</PickerCardTitle>
           <MonthPicker
             defaultValue={selectedMonth}
             onChange={(value) => console.log("MonthPicker default value", value)}
           />
-        </div>
-      </div>
-      <hr style={{ width: "50%" }} />
-      <div style={styleFlex}>
-        <div>
-          <span style={styleText}>Range Month Picker - no default value</span>
+        </PickerCardContent>
+      </PickerCard>
+      <PickerCardSeparator />
+      <PickerCard>
+        <PickerCardTitle size="medium">Range Month Picker</PickerCardTitle>
+        <PickerCardContent>
+          <PickerCardTitle>Range Month Picker - no default value</PickerCardTitle>
           <MonthPicker
             range
             onChange={(value) => {
@@ -64,17 +62,17 @@ function App() {
               setSelectedRange(value);
             }}
           />
-        </div>
-        <div>
-          <span style={styleText}>Range Month Picker - default value</span>
+        </PickerCardContent>
+        <PickerCardContent>
+          <PickerCardTitle>Range Month Picker - default value</PickerCardTitle>
           <MonthPicker
             range
             defaultValue={selectedRange}
             onChange={(value) => console.log("MonthRangePicker default value", value)}
           />
-        </div>
-      </div>
-    </div>
+        </PickerCardContent>
+      </PickerCard>
+    </AppWrapper>
   );
 }
 

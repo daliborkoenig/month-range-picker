@@ -44,7 +44,7 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
   const picker = useMonthPicker({ isRange: true });
 
   // Initialize state
-  const currentYear = new Date().getFullYear();
+  const currentYear = moment().year();
 
   // Parse default values from strings if provided
   // Get the first and last values from the array if it has at least 2 elements
@@ -60,8 +60,8 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
     }
   }
 
-  // Get view years from selection or default to current year
-  const firstViewYear = defaultFrom?.year || currentYear;
+  // Get view years from selection or use previous year for left, current year for right
+  const firstViewYear = defaultFrom?.year || currentYear - 1;
   const secondViewYear = defaultTo?.year || currentYear;
 
   // Initialize picker-specific state
@@ -107,13 +107,11 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
 
   // Clear selection
   const clearSelection = () => {
-    const currentYear = new Date().getFullYear();
-
     updatePickerState((draft) => {
       draft.selection = [null, null];
       draft.step = "from";
-      // Reset view years to current year on clear
-      draft.viewYears = [currentYear, currentYear];
+      // Reset view years to previous and current year on clear
+      draft.viewYears = [currentYear - 1, currentYear];
     });
   };
 
