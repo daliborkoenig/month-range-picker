@@ -4,40 +4,29 @@ export type MonthObject = { year: number; month: number };
 
 export type AnimationState = "entering" | "visible" | "exiting" | "closed";
 
+// Fixed component constants
+export const ANIMATION_DURATION = 200; // in ms
+export const CLOSE_DELAY = 300; // in ms
+
 export type SharedMonthPickerProps = {
   placeholder?: string;
   locale?: "en" | "de";
-  className?: string;
-  animationDuration?: number; // in ms
-  closeDelay?: number; // in ms
   disabledMonths?: string[]; // format: "MM/YYYY"
   selectableMonths?: string[]; // format: "MM/YYYY"
   minDate?: string; // format: "MM/YYYY"
   maxDate?: string; // format: "MM/YYYY"
 };
 
-export type MonthRangePickerProps = SharedMonthPickerProps &
+export type MonthPickerProps = SharedMonthPickerProps &
   (
     | {
         range: true;
-        onChange: (value: [string, string]) => void;
-        defaultValue?: [MonthObject, MonthObject];
-        initialFromYear?: number;
-        initialToYear?: number;
+        onChange: (value: string[]) => void; // Array of all months in range, format: ["MM/YYYY", "MM/YYYY", ...]
+        defaultValue?: [string, string]; // format: ["MM/YYYY", "MM/YYYY"]
       }
     | {
         range?: false;
         onChange: (value: string) => void;
-        defaultValue?: MonthObject;
-        initialYear?: number;
+        defaultValue?: string; // format: "MM/YYYY"
       }
   );
-
-export type MonthRangePickerState = {
-  open: boolean;
-  animationState: AnimationState;
-  viewYears: number[];
-  selection: Array<MonthObject | null>;
-  hoveredMonth: MonthObject | null;
-  step: "from" | "to";
-};

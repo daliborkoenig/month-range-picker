@@ -2,6 +2,23 @@ import moment from "moment";
 import { MonthObject } from "./types";
 
 /**
+ * Generates an array of all months in a given range
+ */
+export const generateMonthRange = (startMonth: MonthObject, endMonth: MonthObject): string[] => {
+  const result: string[] = [];
+  const startIndex = startMonth.year * 12 + startMonth.month;
+  const endIndex = endMonth.year * 12 + endMonth.month;
+
+  for (let i = startIndex; i <= endIndex; i++) {
+    const year = Math.floor(i / 12);
+    const month = i % 12;
+    result.push(formatMonth(month, year));
+  }
+
+  return result;
+};
+
+/**
  * Gets short month names for the specified locale
  */
 export const getMonthsShort = (loc: "en" | "de") => {

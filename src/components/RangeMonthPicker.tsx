@@ -3,7 +3,7 @@ import { useImmer } from "use-immer";
 import _ from "lodash";
 import moment from "moment";
 import "moment/locale/de";
-import { MonthObject, MonthRangePickerProps, MonthRangePickerState, AnimationState } from "./types";
+import { MonthObject, SharedMonthPickerProps, ANIMATION_DURATION, CLOSE_DELAY } from "./types";
 import {
   InputContainer,
   StyledInput,
@@ -22,46 +22,102 @@ import {
 } from "./styled-picker";
 import {
   getMonthsShort,
-  formatMonth,
-  parseMonth,
   isMonthDisabled,
   ymIndex,
   isInRange,
+  parseMonth,
+  generateMonthRange,
 } from "./picker-helper";
 
-// Main component
-export const MonthRangePicker: FC<MonthRangePickerProps> = (props) => {
+// Props definition for range month picker
+export interface RangeMonthPickerProps extends SharedMonthPickerProps {
+  onChange: (value: string[]) => void; // Array of all months in range, format: ["MM/YYYY", "MM/YYYY", ...]
+  defaultValue?: [string, string]; // format: ["MM/YYYY", "MM/YYYY"]
+}
+
+// State definition for range month picker
+interface RangeMonthPickerState {
+  open: boolean;
+  animationState: "entering" | "visible" | "exiting" | "closed";
+  viewYears: [number, number];
+  selection: [MonthObject | null, MonthObject | null];
+  hoveredMonth: MonthObject | null;
+  step: "from" | "to";
+}
+
+export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
   const {
     locale = "de",
-    placeholder = props.range ? "Pick month range" : "Pick month",
-    animationDuration = 200,
-    closeDelay = 300,
+    placeholder = "Pick month range",
     disabledMonths,
     selectableMonths,
     minDate,
     maxDate,
+    onChange,
+    defaultValue,
   } = props;
 
-  // Initialize state based on whether this is range mode or not
-  const [state, updateState] = useImmer<MonthRangePickerState>({
+  // Initialize state
+  const currentYear = new Date().getFullYear();
+
+  // Parse default values from strings if provided
+  const defaultFrom = defaultValue?.[0] ? parseMonth(defaultValue[0]) : null;
+  const defaultTo = defaultValue?.[1] ? parseMonth(defaultValue[1]) : null;
+
+  // Get view years from selection or default to current year
+  const firstViewYear = defaultFrom?.year || currentYear;
+  const secondViewYear = defaultTo?.year || currentYear;
+
+  const [state, updateState] = useImmer<RangeMonthPickerState>({
     open: false,
     animationState: "closed",
-    viewYears: props.range
-      ? [
-          (props.range && props.defaultValue?.[0]?.year) ||
-            props.initialFromYear ||
-            new Date().getFullYear(),
-          (props.range && props.defaultValue?.[1]?.year) ||
-            props.initialToYear ||
-            new Date().getFullYear() + 1,
-        ]
-      : [props.defaultValue?.year || props.initialYear || new Date().getFullYear()],
-    selection: props.range
-      ? [props.defaultValue?.[0] || null, props.defaultValue?.[1] || null]
-      : [props.defaultValue || null],
+    viewYears: [firstViewYear, secondViewYear],
+    selection: [defaultFrom, defaultTo],
     hoveredMonth: null,
     step: "from",
   });
+
+  // React to changes in defaultValue prop
+  useEffect(() => {
+    if (defaultValue) {
+      const parsedFrom = defaultValue[0] ? parseMonth(defaultValue[0]) : null;
+      const parsedTo = defaultValue[1] ? parseMonth(defaultValue[1]) : null;
+
+      updateState((draft) => {
+        draft.selection = [parsedFrom, parsedTo];
+
+        // If not open, also update the viewYears
+        if (!draft.open) {
+          // If both values are provided, use their years
+          if (parsedFrom && parsedTo) {
+            draft.viewYears = [parsedFrom.year, parsedTo.year];
+          }
+          // If only first value is provided
+          else if (parsedFrom) {
+            draft.viewYears = [parsedFrom.year, parsedFrom.year];
+          }
+          // If no values are provided, reset to current year
+          else {
+            draft.viewYears = [currentYear, currentYear];
+          }
+        }
+
+        // Reset step to "from" if selection is incomplete
+        if (!parsedTo) {
+          draft.step = "from";
+        }
+      });
+    } else {
+      // If defaultValue is cleared, reset selection
+      updateState((draft) => {
+        draft.selection = [null, null];
+        if (!draft.open) {
+          draft.viewYears = [currentYear, currentYear];
+        }
+        draft.step = "from";
+      });
+    }
+  }, [defaultValue, updateState, currentYear]);
 
   // Set up references
   const inputRef = useRef<HTMLInputElement>(null);
@@ -74,17 +130,11 @@ export const MonthRangePicker: FC<MonthRangePickerProps> = (props) => {
 
   // Calculate input label
   const inputLabel = useMemo(() => {
-    if (props.range) {
-      const [from, to] = state.selection as [MonthObject | null, MonthObject | null];
-      const fmt = (v: MonthObject | null) => (v ? `${months[v.month]} ${v.year}` : "?");
-      if (!from && !to) return placeholder;
-      return `${fmt(from)} – ${fmt(to)}`;
-    } else {
-      const selected = state.selection[0];
-      if (!selected) return placeholder;
-      return `${months[selected.month]} ${selected.year}`;
-    }
-  }, [state.selection, placeholder, months, props.range]);
+    const [from, to] = state.selection;
+    const fmt = (v: MonthObject | null) => (v ? `${months[v.month]} ${v.year}` : "?");
+    if (!from && !to) return placeholder;
+    return `${fmt(from)} – ${fmt(to)}`;
+  }, [state.selection, placeholder, months]);
 
   // Animation timing
   useEffect(() => {
@@ -102,13 +152,13 @@ export const MonthRangePicker: FC<MonthRangePickerProps> = (props) => {
           draft.animationState = "closed";
           draft.open = false;
         });
-      }, animationDuration);
+      }, ANIMATION_DURATION);
     }
 
     return () => {
       if (timeout) clearTimeout(timeout);
     };
-  }, [state.animationState, animationDuration, updateState]);
+  }, [state.animationState, updateState]);
 
   // Position calculation
   const updatePosition = () => {
@@ -122,10 +172,7 @@ export const MonthRangePicker: FC<MonthRangePickerProps> = (props) => {
     const scrollLeft = window.scrollX;
     const scrollTop = window.scrollY;
 
-    // Make the popup wider only in range mode
-    const width = props.range ? "428px" : "210px";
-
-    popup.style.width = width;
+    popup.style.width = "428px";
     popup.style.top = `${rect.bottom + 8 + scrollTop}px`;
     popup.style.left = `${rect.left + scrollLeft}px`;
   };
@@ -175,10 +222,32 @@ export const MonthRangePicker: FC<MonthRangePickerProps> = (props) => {
     };
   }, [state.open]);
 
+  // Handle ESC key press
+  useEffect(() => {
+    if (!state.open) return;
+
+    const handleEscKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeWithAnimation();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscKey);
+    return () => {
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [state.open]);
+
   // Close with animation
   const closeWithAnimation = () => {
     updateState((draft) => {
       draft.animationState = "exiting";
+
+      // Reset selection if it's partial (only "from" is selected)
+      if (draft.selection[0] && !draft.selection[1]) {
+        draft.selection = [null, null];
+        draft.step = "from";
+      }
     });
 
     // Optional delay before actually closing
@@ -187,7 +256,7 @@ export const MonthRangePicker: FC<MonthRangePickerProps> = (props) => {
         draft.open = false;
         draft.animationState = "closed";
       });
-    }, closeDelay);
+    }, CLOSE_DELAY);
   };
 
   // Toggle open/close
@@ -204,62 +273,54 @@ export const MonthRangePicker: FC<MonthRangePickerProps> = (props) => {
 
   // Clear selection
   const clearSelection = () => {
+    const currentYear = new Date().getFullYear();
+
     updateState((draft) => {
-      draft.selection = props.range ? [null, null] : [null];
+      draft.selection = [null, null];
       draft.step = "from";
+      // Reset view years to current year on clear
+      draft.viewYears = [currentYear, currentYear];
     });
-    if (!props.range) {
-      props.onChange("");
-    }
   };
 
-  // Handle month selection for single mode
+  // Handle month selection
   const handleSelectMonth = (year: number, month: number) => {
     if (isMonthDisabled(year, month, disabledMonths, selectableMonths, minDate, maxDate)) {
       return;
     }
 
-    if (props.range) {
-      const [from, to] = state.selection as [MonthObject | null, MonthObject | null];
+    const [from, to] = state.selection;
 
-      if (state.step === "from" || (from && to)) {
-        // Start new selection
-        updateState((draft) => {
-          draft.selection = [{ year, month }, null];
-          draft.step = "to";
-        });
-      } else {
-        // Complete selection
-        const newTo = { year, month };
-
-        // Determine chronological order
-        const [first, second] =
-          from && newTo
-            ? ymIndex(from.year, from.month) <= ymIndex(newTo.year, newTo.month)
-              ? [from, newTo]
-              : [newTo, from]
-            : [null, null];
-
-        updateState((draft) => {
-          // Store in chronological order
-          draft.selection = [first, second];
-          draft.hoveredMonth = null;
-        });
-
-        if (first && second) {
-          const f = formatMonth(first.month, first.year);
-          const s = formatMonth(second.month, second.year);
-          props.onChange([f, s]);
-          closeWithAnimation();
-        }
-      }
-    } else {
-      // Single mode selection
+    if (state.step === "from" || (from && to)) {
+      // Start new selection
       updateState((draft) => {
-        draft.selection = [{ year, month }];
+        draft.selection = [{ year, month }, null];
+        draft.step = "to";
       });
-      props.onChange(formatMonth(month, year));
-      closeWithAnimation();
+    } else {
+      // Complete selection
+      const newTo = { year, month };
+
+      // Determine chronological order
+      const [first, second] =
+        from && newTo
+          ? ymIndex(from.year, from.month) <= ymIndex(newTo.year, newTo.month)
+            ? [from, newTo]
+            : [newTo, from]
+          : [null, null];
+
+      updateState((draft) => {
+        // Store in chronological order
+        draft.selection = [first, second];
+        draft.hoveredMonth = null;
+      });
+
+      if (first && second) {
+        // Generate array of all months in the range
+        const monthsInRange = generateMonthRange(first, second);
+        onChange(monthsInRange);
+        closeWithAnimation();
+      }
     }
   };
 
@@ -274,12 +335,24 @@ export const MonthRangePicker: FC<MonthRangePickerProps> = (props) => {
     });
   };
 
+  // Handle year changes
+  const handleYearChange = (columnIndex: 0 | 1, newYear: number) => {
+    updateState((draft) => {
+      // If changing right column, ensure it's greater than or equal to left column + 1
+      if (columnIndex === 1) {
+        draft.viewYears[1] = Math.max(newYear, draft.viewYears[0] + 1);
+      }
+      // If changing left column, ensure it's less than or equal to right column - 1
+      else if (columnIndex === 0) {
+        draft.viewYears[0] = Math.min(newYear, draft.viewYears[1] - 1);
+      }
+    });
+  };
+
   // Render a column with months
-  const renderMonthColumn = (viewYear: number, columnType: "left" | "right") => {
-    const isLeft = columnType === "left";
-    const [from, to] = props.range
-      ? (state.selection as [MonthObject | null, MonthObject | null])
-      : [state.selection[0], null];
+  const renderMonthColumn = (columnIndex: 0 | 1) => {
+    const viewYear = state.viewYears[columnIndex];
+    const [from, to] = state.selection;
 
     return (
       <PickerColumn>
@@ -287,15 +360,12 @@ export const MonthRangePicker: FC<MonthRangePickerProps> = (props) => {
           <YearRow>
             <ArrowButton
               onClick={() => {
-                updateState((draft) => {
-                  const idx = isLeft ? 0 : 1;
-                  if (isLeft) {
-                    draft.viewYears[idx] = draft.viewYears[idx] - 1;
-                  } else {
-                    const minYear = props.range ? draft.viewYears[0] + 1 : 0;
-                    draft.viewYears[idx] = Math.max(draft.viewYears[idx] - 1, minYear);
-                  }
-                });
+                if (columnIndex === 0) {
+                  handleYearChange(0, viewYear - 1);
+                } else {
+                  const minYear = state.viewYears[0] + 1;
+                  handleYearChange(1, Math.max(viewYear - 1, minYear));
+                }
               }}
               aria-label="Previous year"
             >
@@ -303,12 +373,7 @@ export const MonthRangePicker: FC<MonthRangePickerProps> = (props) => {
             </ArrowButton>
             <YearText>{viewYear}</YearText>
             <ArrowButton
-              onClick={() => {
-                updateState((draft) => {
-                  const idx = isLeft ? 0 : 1;
-                  draft.viewYears[idx] = draft.viewYears[idx] + 1;
-                });
-              }}
+              onClick={() => handleYearChange(columnIndex, viewYear + 1)}
               aria-label="Next year"
             >
               ›
@@ -331,17 +396,28 @@ export const MonthRangePicker: FC<MonthRangePickerProps> = (props) => {
                 (from && from.year === viewYear && from.month === month) ||
                 (to && to.year === viewYear && to.month === month);
 
-              const isRangeMonth =
-                props.range && isInRange(viewYear, month, from, to, state.hoveredMonth, state.step);
+              const isRangeMonth = isInRange(
+                viewYear,
+                month,
+                from,
+                to,
+                state.hoveredMonth,
+                state.step
+              );
 
               const isHovered =
                 state.hoveredMonth?.year === viewYear && state.hoveredMonth?.month === month;
 
               return (
                 <MonthTile
-                  key={`${columnType}-${label}-${viewYear}`}
+                  key={`range-${columnIndex}-${label}-${viewYear}`}
                   onClick={() => handleSelectMonth(viewYear, month)}
                   onMouseEnter={() => handleMonthHover(viewYear, month)}
+                  onMouseLeave={() => {
+                    updateState((draft) => {
+                      draft.hoveredMonth = null;
+                    });
+                  }}
                   $active={!!isActive}
                   $inRange={!!isRangeMonth}
                   $disabled={!!isDisabled}
@@ -369,7 +445,7 @@ export const MonthRangePicker: FC<MonthRangePickerProps> = (props) => {
         aria-expanded={state.open}
       />
 
-      {state.selection.some(Boolean) && (
+      {(state.selection[0] || state.selection[1]) && (
         <ClearButton onClick={clearSelection} aria-label="Clear selection">
           ✕
         </ClearButton>
@@ -378,14 +454,10 @@ export const MonthRangePicker: FC<MonthRangePickerProps> = (props) => {
       {state.animationState !== "closed" && (
         <Popup ref={popupRef} $animationState={state.animationState}>
           <Container>
-            {props.range ? (
-              <FlexRow>
-                {renderMonthColumn(state.viewYears[0], "left")}
-                {renderMonthColumn(state.viewYears[1], "right")}
-              </FlexRow>
-            ) : (
-              renderMonthColumn(state.viewYears[0], "left")
-            )}
+            <FlexRow>
+              {renderMonthColumn(0)}
+              {renderMonthColumn(1)}
+            </FlexRow>
           </Container>
         </Popup>
       )}

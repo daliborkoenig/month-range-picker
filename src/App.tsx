@@ -1,4 +1,4 @@
-import { MonthRangePicker } from "./components/MonthRangePicker";
+import { MonthPicker } from "./components/MonthPicker";
 
 function App() {
   return (
@@ -14,15 +14,17 @@ function App() {
           width: "100%",
         }}
       >
-        <MonthRangePicker
+        <MonthPicker
           // disabledMonths={["01/2025", "02/2025"]}
-          selectableMonths={["03/2025", "04/2025"]}
+          // selectableMonths={["03/2025", "04/2025"]}
+          defaultValue={"03/2025"}
           onChange={(value) => console.log("MonthPicker value", value)}
         />
-        <MonthRangePicker
+        <MonthPicker
           range
           // disabledMonths={["01/2025", "02/2025"]}
-          selectableMonths={["03/2025", "04/2025"]}
+          // selectableMonths={["03/2025", "04/2025"]}
+          defaultValue={["03/2025", "05/2027"]}
           onChange={(value) => console.log("MonthRangePicker value", value)}
         />
       </div>
