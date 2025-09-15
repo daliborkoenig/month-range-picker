@@ -11,16 +11,14 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         output: {
           manualChunks: {
             "react-vendor": ["react", "react-dom"],
-            vendor: ["ky", "moment"],
+            vendor: ["moment"],
           },
         },
       },
     },
     plugins: [react()],
     define: {
-      "process.env.NODE_ENV": JSON.stringify(
-        isDev ? "development" : "production"
-      ),
+      "process.env.NODE_ENV": JSON.stringify(isDev ? "development" : "production"),
     },
     server: {
       port: 3000,
@@ -28,12 +26,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       open: true,
     },
     optimizeDeps: {
-      include: [
-        "react",
-        "react-dom",
-        "zustand",
-        "use-sync-external-store/shim/with-selector",
-      ],
+      include: ["react", "react-dom", "zustand", "use-sync-external-store/shim/with-selector"],
       force: true,
     },
     resolve: {
