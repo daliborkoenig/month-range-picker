@@ -55,6 +55,7 @@ export const PickerCardTitle = styled.span<{ size?: "small" | "medium" }>(({ siz
   return css`
     font-size: ${size === "small" ? "10px" : "16px"};
     padding-left: 10px;
+    word-break: break-word;
   `;
 });
 

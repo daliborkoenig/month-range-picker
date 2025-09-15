@@ -34,7 +34,7 @@ function App() {
       <PickerCard>
         <PickerCardTitle size="medium">Single Month Picker</PickerCardTitle>
         <PickerCardContent>
-          <PickerCardTitle>Single Month Picker - no default value</PickerCardTitle>
+          <PickerCardTitle>no default value, controls default value</PickerCardTitle>
           <MonthPicker
             onChange={(value) => {
               console.log("MonthPicker no default value", value);
@@ -43,7 +43,7 @@ function App() {
           />
         </PickerCardContent>
         <PickerCardContent>
-          <PickerCardTitle>Single Month Picker - default value</PickerCardTitle>
+          <PickerCardTitle>default value</PickerCardTitle>
           <MonthPicker
             defaultValue={selectedMonth}
             onChange={(value) => console.log("MonthPicker default value", value)}
@@ -54,7 +54,7 @@ function App() {
       <PickerCard>
         <PickerCardTitle size="medium">Range Month Picker</PickerCardTitle>
         <PickerCardContent>
-          <PickerCardTitle>Range Month Picker - no default value</PickerCardTitle>
+          <PickerCardTitle>no default value, controls default value</PickerCardTitle>
           <MonthPicker
             range
             onChange={(value) => {
@@ -64,7 +64,7 @@ function App() {
           />
         </PickerCardContent>
         <PickerCardContent>
-          <PickerCardTitle>Range Month Picker - default value</PickerCardTitle>
+          <PickerCardTitle>default value</PickerCardTitle>
           <MonthPicker
             range
             defaultValue={selectedRange}
