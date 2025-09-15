@@ -2,8 +2,6 @@
 
 A lightweight, flexible React component for selecting single months or month ranges with a clean interface.
 
-![Month Range Picker](https://via.placeholder.com/800x400.png?text=Month+Range+Picker)
-
 ## Features
 
 - **Dual Mode**: Choose between single month or month range selection
