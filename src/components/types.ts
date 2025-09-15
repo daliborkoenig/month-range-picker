@@ -16,17 +16,20 @@ export type SharedMonthPickerProps = {
   maxDate?: string; // format: "MM/YYYY"
 };
 
-export type MonthPickerProps = SharedMonthPickerProps &
-  (
-    | {
-        range: true;
-        onChange: (value: string[]) => void; // Array of all months in range, format: ["MM/YYYY", "MM/YYYY", ...]
-        defaultValue?: [string, string]; // format: ["MM/YYYY", "MM/YYYY"]
-      }
-    | {
-        range?: false;
-        onChange: (value: string) => void;
-        defaultValue?: string; // format: "MM/YYYY"
-        disabledMonths?: string[]; // format: "MM/YYYY"
-      }
-  );
+// Props definition for range month picker
+export interface RangeMonthPickerProps extends SharedMonthPickerProps {
+  onChange: (value: string[]) => void; // Array of all months in range, format: ["MM/YYYY", "MM/YYYY", ...]
+  defaultValue?: [string, string]; // format: ["MM/YYYY", "MM/YYYY"]
+  range: true;
+}
+
+// Props definition for single month picker
+export interface SingleMonthPickerProps extends SharedMonthPickerProps {
+  onChange: (value: string) => void;
+  defaultValue?: string; // format: "MM/YYYY"
+  disabledMonths?: string[]; // format: "MM/YYYY"
+  range?: false;
+}
+
+export type MonthPickerProps =
+  | SharedMonthPickerProps & (RangeMonthPickerProps | SingleMonthPickerProps);

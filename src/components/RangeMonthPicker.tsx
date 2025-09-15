@@ -2,7 +2,7 @@ import { useMemo, useEffect, FC } from "react";
 import { useImmer } from "use-immer";
 import moment from "moment";
 import "moment/locale/de";
-import { MonthObject, SharedMonthPickerProps } from "./types";
+import { MonthObject, RangeMonthPickerProps } from "./types";
 import {
   InputContainer,
   StyledInput,
@@ -28,12 +28,6 @@ import {
   generateMonthRange,
 } from "./picker-helper";
 import { useMonthPicker } from "./use-month-picker";
-
-// Props definition for range month picker
-export interface RangeMonthPickerProps extends SharedMonthPickerProps {
-  onChange: (value: string[]) => void; // Array of all months in range, format: ["MM/YYYY", "MM/YYYY", ...]
-  defaultValue?: [string, string]; // format: ["MM/YYYY", "MM/YYYY"]
-}
 
 export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
   const {

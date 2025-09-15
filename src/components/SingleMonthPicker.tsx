@@ -2,7 +2,7 @@ import { useMemo, useEffect, FC } from "react";
 import { useImmer } from "use-immer";
 import moment from "moment";
 import "moment/locale/de";
-import { MonthObject, SharedMonthPickerProps } from "./types";
+import { MonthObject, SingleMonthPickerProps } from "./types";
 import {
   InputContainer,
   StyledInput,
@@ -20,13 +20,6 @@ import {
 } from "./styled-picker";
 import { getMonthsShort, formatMonth, isMonthDisabled, parseMonth } from "./picker-helper";
 import { useMonthPicker } from "./use-month-picker";
-
-// Props definition for single month picker
-export interface SingleMonthPickerProps extends SharedMonthPickerProps {
-  onChange: (value: string) => void;
-  defaultValue?: string; // format: "MM/YYYY"
-  disabledMonths?: string[]; // format: "MM/YYYY"
-}
 
 export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
   const {
