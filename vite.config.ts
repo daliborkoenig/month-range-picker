@@ -1,5 +1,6 @@
 import { ConfigEnv, defineConfig, UserConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import momentTimezonePlugin from "vite-plugin-moment-timezone";
 
 export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
   const isDev = mode === "development";
@@ -16,7 +17,14 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         },
       },
     },
-    plugins: [react()],
+    plugins: [
+      react(),
+      momentTimezonePlugin({
+        zones: ["Europe/Berlin"],
+        startYear: 2020,
+        endYear: 2030,
+      }),
+    ],
     define: {
       "process.env.NODE_ENV": JSON.stringify(isDev ? "development" : "production"),
     },
@@ -26,7 +34,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       open: true,
     },
     optimizeDeps: {
-      include: ["react", "react-dom", "zustand", "use-sync-external-store/shim/with-selector"],
+      include: ["react", "react-dom", "moment-timezone"],
       force: true,
     },
     resolve: {

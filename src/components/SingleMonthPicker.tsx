@@ -8,14 +8,9 @@ import {
   StyledInput,
   ClearButton,
   Popup,
-  Container,
-  PickerColumn,
   YearCard,
-  YearRow,
   ArrowButton,
-  YearText,
   MonthsCard,
-  MonthsGrid,
   MonthTile,
 } from "./styled-picker";
 import { getMonthsShort, formatMonth, isMonthDisabled, parseMonth } from "./picker-helper";
@@ -128,68 +123,69 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
           $animationState={picker.state.animationState}
           $range={false}
         >
-          <Container>
-            <PickerColumn>
-              <YearCard>
-                <YearRow>
-                  <ArrowButton
-                    onClick={() => handleYearChange(pickerState.viewYear - 1)}
-                    aria-label="Previous year"
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "7.5px",
+            }}
+          >
+            {" "}
+            <YearCard>
+              <ArrowButton
+                onClick={() => handleYearChange(pickerState.viewYear - 1)}
+                aria-label="Previous year"
+              >
+                ‹
+              </ArrowButton>
+              <span>{pickerState.viewYear}</span>
+              <ArrowButton
+                onClick={() => handleYearChange(pickerState.viewYear + 1)}
+                aria-label="Next year"
+              >
+                ›
+              </ArrowButton>
+            </YearCard>
+            <MonthsCard>
+              {months.map((label, month) => {
+                const isDisabled = isMonthDisabled({
+                  year: pickerState.viewYear,
+                  month,
+                  disabledMonths,
+                  selectableMonths,
+                  minDate,
+                  maxDate,
+                });
+
+                const isActive =
+                  pickerState.selection?.year === pickerState.viewYear &&
+                  pickerState.selection?.month === month;
+
+                const isHovered =
+                  pickerState.hoveredMonth?.year === pickerState.viewYear &&
+                  pickerState.hoveredMonth?.month === month;
+
+                return (
+                  <MonthTile
+                    key={`${label}-${pickerState.viewYear}`}
+                    onClick={() => handleSelectMonth(pickerState.viewYear, month)}
+                    onMouseEnter={() => handleMonthHover(pickerState.viewYear, month)}
+                    onMouseLeave={() => {
+                      updatePickerState((draft) => {
+                        draft.hoveredMonth = null;
+                      });
+                    }}
+                    $active={!!isActive}
+                    $inRange={false}
+                    $disabled={!!isDisabled}
+                    $hovered={!!isHovered}
                   >
-                    ‹
-                  </ArrowButton>
-                  <YearText>{pickerState.viewYear}</YearText>
-                  <ArrowButton
-                    onClick={() => handleYearChange(pickerState.viewYear + 1)}
-                    aria-label="Next year"
-                  >
-                    ›
-                  </ArrowButton>
-                </YearRow>
-              </YearCard>
-              <MonthsCard>
-                <MonthsGrid>
-                  {months.map((label, month) => {
-                    const isDisabled = isMonthDisabled({
-                      year: pickerState.viewYear,
-                      month,
-                      disabledMonths,
-                      selectableMonths,
-                      minDate,
-                      maxDate,
-                    });
-
-                    const isActive =
-                      pickerState.selection?.year === pickerState.viewYear &&
-                      pickerState.selection?.month === month;
-
-                    const isHovered =
-                      pickerState.hoveredMonth?.year === pickerState.viewYear &&
-                      pickerState.hoveredMonth?.month === month;
-
-                    return (
-                      <MonthTile
-                        key={`${label}-${pickerState.viewYear}`}
-                        onClick={() => handleSelectMonth(pickerState.viewYear, month)}
-                        onMouseEnter={() => handleMonthHover(pickerState.viewYear, month)}
-                        onMouseLeave={() => {
-                          updatePickerState((draft) => {
-                            draft.hoveredMonth = null;
-                          });
-                        }}
-                        $active={!!isActive}
-                        $inRange={false}
-                        $disabled={!!isDisabled}
-                        $hovered={!!isHovered}
-                      >
-                        {label}
-                      </MonthTile>
-                    );
-                  })}
-                </MonthsGrid>
-              </MonthsCard>
-            </PickerColumn>
-          </Container>
+                    {label}
+                  </MonthTile>
+                );
+              })}
+            </MonthsCard>
+          </div>
         </Popup>
       )}
     </InputContainer>

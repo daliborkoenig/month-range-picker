@@ -8,15 +8,9 @@ import {
   StyledInput,
   ClearButton,
   Popup,
-  Container,
-  FlexRow,
-  PickerColumn,
   YearCard,
-  YearRow,
   ArrowButton,
-  YearText,
   MonthsCard,
-  MonthsGrid,
   MonthTile,
 } from "./styled-picker";
 import {
@@ -28,6 +22,7 @@ import {
   generateMonthRange,
 } from "./picker-helper";
 import { useMonthPicker } from "./use-month-picker";
+import { HiMiniChevronLeft, HiMiniChevronRight } from "react-icons/hi2";
 
 export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
   const {
@@ -94,8 +89,9 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
   };
 
   // Memoized values
-  moment.locale(locale);
+  // moment.locale(locale);
   const months = useMemo(() => getMonthsShort(locale), [locale]);
+  console.log(moment().locale("de").localeData().monthsShort());
 
   // Calculate input label
   const inputLabel = useMemo(() => {
@@ -181,90 +177,6 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
     });
   };
 
-  // Render a column with months
-  const renderMonthColumn = (columnIndex: 0 | 1) => {
-    const viewYear = pickerState.viewYears[columnIndex];
-    const [from, to] = pickerState.selection;
-
-    return (
-      <PickerColumn>
-        <YearCard>
-          <YearRow>
-            <ArrowButton
-              onClick={() => {
-                if (columnIndex === 0) {
-                  handleYearChange(0, viewYear - 1);
-                } else {
-                  const minYear = pickerState.viewYears[0] + 1;
-                  handleYearChange(1, Math.max(viewYear - 1, minYear));
-                }
-              }}
-              aria-label="Previous year"
-            >
-              ‹
-            </ArrowButton>
-            <YearText>{viewYear}</YearText>
-            <ArrowButton
-              onClick={() => handleYearChange(columnIndex, viewYear + 1)}
-              aria-label="Next year"
-            >
-              ›
-            </ArrowButton>
-          </YearRow>
-        </YearCard>
-        <MonthsCard>
-          <MonthsGrid>
-            {months.map((label, month) => {
-              const isDisabled = isMonthDisabled({
-                year: viewYear,
-                month,
-                selectableMonths,
-                minDate,
-                maxDate,
-              });
-
-              const isActive =
-                (from && from.year === viewYear && from.month === month) ||
-                (to && to.year === viewYear && to.month === month);
-
-              const isRangeMonth = isInRange({
-                y: viewYear,
-                m: month,
-                from,
-                to,
-                hoveredMonth: pickerState.hoveredMonth,
-                step: pickerState.step,
-              });
-
-              const isHovered =
-                pickerState.hoveredMonth?.year === viewYear &&
-                pickerState.hoveredMonth?.month === month;
-
-              return (
-                <MonthTile
-                  key={`range-${columnIndex}-${label}-${viewYear}`}
-                  onClick={() => handleSelectMonth(viewYear, month, isDisabled)}
-                  onMouseEnter={() => handleMonthHover(viewYear, month, isDisabled)}
-                  onMouseLeave={() => {
-                    updatePickerState((draft) => {
-                      draft.hoveredMonth = null;
-                    });
-                  }}
-                  $active={!!isActive}
-                  $inRange={!!isRangeMonth}
-                  $disabled={!!isDisabled}
-                  $hovered={!!isHovered}
-                >
-                  {label}
-                </MonthTile>
-              );
-            })}
-          </MonthsGrid>
-        </MonthsCard>
-      </PickerColumn>
-    );
-  };
-
   return (
     <InputContainer ref={picker.refs.containerRef}>
       <StyledInput
@@ -289,12 +201,89 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
           $animationState={picker.state.animationState}
           $range={true}
         >
-          <Container>
-            <FlexRow>
-              {renderMonthColumn(0)}
-              {renderMonthColumn(1)}
-            </FlexRow>
-          </Container>
+          <div style={{ display: "flex", gap: "7.5px", boxSizing: "border-box" }}>
+            {Array.from({ length: 2 }).map((_, index) => {
+              const viewYear = pickerState.viewYears[index];
+              const [from, to] = pickerState.selection;
+
+              return (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "7.5px",
+                  }}
+                  key={`picker-column-${index}`}
+                >
+                  <YearCard>
+                    <ArrowButton
+                      onClick={() => {
+                        if (index === 0) {
+                          handleYearChange(0, viewYear - 1);
+                        } else {
+                          const minYear = pickerState.viewYears[0] + 1;
+                          handleYearChange(1, Math.max(viewYear - 1, minYear));
+                        }
+                      }}
+                    >
+                      <HiMiniChevronLeft size={20} />
+                    </ArrowButton>
+                    <span>{viewYear}</span>
+                    <ArrowButton onClick={() => handleYearChange(index as 0 | 1, viewYear + 1)}>
+                      <HiMiniChevronRight size={20} />
+                    </ArrowButton>
+                  </YearCard>
+                  <MonthsCard>
+                    {months.map((label, month) => {
+                      const isDisabled = isMonthDisabled({
+                        year: viewYear,
+                        month,
+                        selectableMonths,
+                        minDate,
+                        maxDate,
+                      });
+
+                      const isActive =
+                        (from && from.year === viewYear && from.month === month) ||
+                        (to && to.year === viewYear && to.month === month);
+
+                      const isRangeMonth = isInRange({
+                        y: viewYear,
+                        m: month,
+                        from,
+                        to,
+                        hoveredMonth: pickerState.hoveredMonth,
+                        step: pickerState.step,
+                      });
+
+                      const isHovered =
+                        pickerState.hoveredMonth?.year === viewYear &&
+                        pickerState.hoveredMonth?.month === month;
+
+                      return (
+                        <MonthTile
+                          key={`range-${index}-${label}-${viewYear}`}
+                          onClick={() => handleSelectMonth(viewYear, month, isDisabled)}
+                          onMouseEnter={() => handleMonthHover(viewYear, month, isDisabled)}
+                          onMouseLeave={() => {
+                            updatePickerState((draft) => {
+                              draft.hoveredMonth = null;
+                            });
+                          }}
+                          $active={!!isActive}
+                          $inRange={!!isRangeMonth}
+                          $disabled={!!isDisabled}
+                          $hovered={!!isHovered}
+                        >
+                          {label}
+                        </MonthTile>
+                      );
+                    })}
+                  </MonthsCard>
+                </div>
+              );
+            })}
+          </div>
         </Popup>
       )}
     </InputContainer>

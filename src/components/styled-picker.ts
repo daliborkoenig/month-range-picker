@@ -1,12 +1,18 @@
 import styled, { css } from "styled-components";
-import { ELEVATION, RADIUS } from "../globalStyles";
 import { AnimationState } from "./types";
+
+const RADIUS = "7.5px";
+
+const getShadow = () => {
+  return `
+    box-shadow: #e5e5e5 0 2px 5px -1px, #a6a6a6 0 1px 3px -1px;
+  `;
+};
 
 export const InputContainer = styled.div(() => {
   return css`
     position: relative;
     display: flex;
-    width: 210px;
     box-sizing: border-box;
   `;
 });
@@ -19,10 +25,10 @@ export const StyledInput = styled.input(() => {
     background: #ffffff;
     color: #4c4c4c;
     text-align: left;
-    box-shadow: ${ELEVATION};
     cursor: pointer;
-    width: 100%;
+    width: 210px;
     box-sizing: border-box;
+    ${getShadow()}
   `;
 });
 
@@ -68,101 +74,52 @@ export const Popup = styled.div<{
     transition: all 300ms cubic-bezier(0.25, 0.1, 0.25, 1);
     display: ${$animationState === "closed" ? "none" : "block"};
     box-sizing: border-box;
-    width: ${$range ? "420px" : "210px"};
-    top: ${$position ? `${$position.top}px` : "calc(100% + 8px)"};
-    left: ${$position ? `${$position.left}px` : "0"};
-  `;
-});
-
-export const Container = styled.div(() => {
-  return css`
-    padding: 0;
-    background: transparent;
-    width: 100%;
-    box-sizing: border-box;
-  `;
-});
-
-export const FlexRow = styled.div(() => {
-  return css`
-    display: flex;
-    gap: 7.5px;
-    width: 100%;
-    box-sizing: border-box;
-    justify-content: space-between;
-  `;
-});
-
-export const PickerColumn = styled.div(() => {
-  return css`
-    display: flex;
-    flex-direction: column;
-    gap: 7.5px;
-    width: 100%;
-    box-sizing: border-box;
+    top: calc(100% + 7.5px);
+    left: 0;
   `;
 });
 
 export const YearCard = styled.div(() => {
   return css`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     background: #ffffff;
     border-radius: ${RADIUS};
-    box-shadow: ${ELEVATION};
-    padding: 4px 8px;
-    width: 100%;
-    box-sizing: border-box;
+    width: 210px;
+    padding: 7.5px;
+    ${getShadow()}
   `;
 });
 
-export const YearRow = styled.div(() => {
+export const ArrowButton = styled.div(({ theme }) => {
   return css`
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    margin: 0;
-  `;
-});
-
-export const ArrowButton = styled.button(() => {
-  return css`
-    border: none;
-    background: transparent;
-    color: #111827;
-    padding: 6px 10px;
     cursor: pointer;
-  `;
-});
-
-export const YearText = styled.div(() => {
-  return css`
-    min-width: 80px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 12px;
+    &:hover {
+      & > svg {
+        color: red;
+      }
+    }
   `;
 });
 
 export const MonthsCard = styled.div(() => {
-  return css`
-    background: #ffffff;
-    border-radius: ${RADIUS};
-    box-shadow: ${ELEVATION};
-    aspect-ratio: 1 / 1;
-    padding: 8px;
-    width: 100%;
-    box-sizing: border-box;
-  `;
-});
-
-export const MonthsGrid = styled.div(() => {
   return css`
     display: grid;
     width: 100%;
     height: 100%;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(4, 1fr);
-    gap: 6px;
+    gap: 7.5px;
+    background: #ffffff;
+    border-radius: ${RADIUS};
+    aspect-ratio: 1 / 1;
+    padding: 8px;
+    width: 210px;
+    ${getShadow()}
   `;
 });
 
