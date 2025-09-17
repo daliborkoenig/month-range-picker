@@ -20,7 +20,7 @@ import {
   formatDate,
   isDateDisabled,
   isDateSelected,
-  generateMonthRangeTest,
+  generateMonthRange,
   isDateInRange,
   isDatePreselected,
 } from "./picker-helper";
@@ -107,7 +107,7 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
       });
 
       // Use the calculated values directly to ensure we have the updated values
-      onChange(generateMonthRangeTest(newFrom, newTo));
+      onChange(generateMonthRange(newFrom, newTo));
     }
   };
 

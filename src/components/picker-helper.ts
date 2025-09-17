@@ -14,20 +14,20 @@ export const extractViewYearsFromDefaultDates = (
 };
 
 /**
- * Generates an array of all months in a given range
+ * Generates an array of all months in a given range MM/YYYY
  */
-export const generateMonthRange = (startMonth: MonthObject, endMonth: MonthObject): string[] => {
+export const generateMonthRange = (startMonth: string, endMonth: string): NonEmptyArray<string> => {
+  const start = moment(startMonth, "MM/YYYY");
+  const end = moment(endMonth, "MM/YYYY");
   const result: string[] = [];
-  const startIndex = startMonth.year * 12 + startMonth.month;
-  const endIndex = endMonth.year * 12 + endMonth.month;
 
-  for (let i = startIndex; i <= endIndex; i++) {
-    const year = Math.floor(i / 12);
-    const month = i % 12;
-    result.push(formatDate(month, year));
+  const current = start.clone();
+  while (current.isSameOrBefore(end, "month")) {
+    result.push(current.format("MM/YYYY"));
+    current.add(1, "month");
   }
 
-  return result;
+  return result as NonEmptyArray<string>;
 };
 
 /**
@@ -221,7 +221,7 @@ type IsDateInRangeProps = {
 };
 export const isDateInRange = ({ date, from, to, preselect }: IsDateInRangeProps): boolean => {
   if (!from || !to) return false;
-  const range = generateMonthRangeTest(from, to);
+  const range = generateMonthRange(from, to);
   return range.includes(date);
 };
 
@@ -249,26 +249,6 @@ export const isDatePreselected = ({
   if (hoveredMonth === from) return false;
 
   // Generate the range between from and hovered month
-  const range = generateMonthRangeTest(from, hoveredMonth);
+  const range = generateMonthRange(from, hoveredMonth);
   return range.includes(date);
-};
-
-/**
- * Generates an array of all months in a given range MM/YYYY
- */
-export const generateMonthRangeTest = (
-  startMonth: string,
-  endMonth: string
-): NonEmptyArray<string> => {
-  const start = moment(startMonth, "MM/YYYY");
-  const end = moment(endMonth, "MM/YYYY");
-  const result: string[] = [];
-
-  const current = start.clone();
-  while (current.isSameOrBefore(end, "month")) {
-    result.push(current.format("MM/YYYY"));
-    current.add(1, "month");
-  }
-
-  return result as NonEmptyArray<string>;
 };
