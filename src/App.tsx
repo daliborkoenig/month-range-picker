@@ -8,7 +8,8 @@ import {
   PickerCardSeparator,
   PickerCardTitle,
 } from "./globalStyles";
-import { NonEmptyArray } from "./components/month-picker/shared/types";
+import { DateFormat, NonEmptyArray } from "./components/month-picker/shared/types";
+import "moment/locale/de";
 
 const styleText = {
   fontSize: "10px",
@@ -23,10 +24,12 @@ const styleFlex = {
 };
 
 function App() {
-  const [selectedMonth, setSelectedMonth] = useState<string>(moment().format("MM/YYYY"));
-  const [selectedRange, setSelectedRange] = useState<NonEmptyArray<string>>([
-    moment().format("MM/YYYY"),
-    moment().add(14, "month").format("MM/YYYY"),
+  const [selectedMonth, setSelectedMonth] = useState<DateFormat>(
+    moment().format("MM/YYYY") as DateFormat
+  );
+  const [selectedRange, setSelectedRange] = useState<NonEmptyArray<DateFormat>>([
+    moment().format("MM/YYYY") as DateFormat,
+    moment().add(14, "month").format("MM/YYYY") as DateFormat,
   ]);
 
   return (

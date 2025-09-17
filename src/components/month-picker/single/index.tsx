@@ -3,7 +3,7 @@ import { useOutsideClick } from "../shared/useOutsideClick";
 import { useImmer } from "use-immer";
 import moment from "moment";
 import "moment/locale/de";
-import { MonthPickerProps } from "../shared/types";
+import { DateFormat, MonthPickerProps } from "../shared/types";
 import {
   InputContainer,
   StyledInput,
@@ -74,7 +74,7 @@ export const SingleMonthPicker: FC<MonthPickerProps> = (props) => {
   };
 
   // Handle month selection
-  const handleSelectDate = (date: string) => {
+  const handleSelectDate = (date: DateFormat) => {
     updatePickerState((draft) => {
       draft.date = date;
       draft.open = false;

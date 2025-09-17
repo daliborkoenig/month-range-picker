@@ -1,5 +1,5 @@
 import moment from "moment";
-import { MonthObject, NonEmptyArray } from "./types";
+import { DateFormat, MonthObject, NonEmptyArray } from "./types";
 
 /**
  * Extracts view years from default dates
@@ -16,18 +16,18 @@ export const extractViewYearsFromDefaultDates = (
 /**
  * Generates an array of all months in a given range MM/YYYY
  */
-export const generateMonthRange = (startMonth: string, endMonth: string): NonEmptyArray<string> => {
+export const generateMonthRange = (startMonth: DateFormat, endMonth: DateFormat): NonEmptyArray<DateFormat> => {
   const start = moment(startMonth, "MM/YYYY");
   const end = moment(endMonth, "MM/YYYY");
-  const result: string[] = [];
+  const result: DateFormat[] = [];
 
   const current = start.clone();
   while (current.isSameOrBefore(end, "month")) {
-    result.push(current.format("MM/YYYY"));
+    result.push(current.format("MM/YYYY") as DateFormat);
     current.add(1, "month");
   }
 
-  return result as NonEmptyArray<string>;
+  return result as NonEmptyArray<DateFormat>;
 };
 
 /**
@@ -44,8 +44,8 @@ export const getMonthsShort = (loc: "en" | "de") => {
 /**
  * Formats month and year as MM/YYYY
  */
-export const formatDate = (month: number, year: number): string => {
-  return `${String(month + 1).padStart(2, "0")}/${year}`;
+export const formatDate = (month: number, year: number): DateFormat => {
+  return `${String(month + 1).padStart(2, "0")}/${year}` as DateFormat;
 };
 
 /**
@@ -124,12 +124,11 @@ export const isDateSelected = ({ date, from, to }: IsDateSelectedProps): boolean
  *  Checks if a month is in range based on various criteria
  */
 type IsDateInRangeProps = {
-  date: string;
-  from?: string;
-  to?: string;
-  preselect?: boolean;
+  date: DateFormat;
+  from?: DateFormat;
+  to?: DateFormat;
 };
-export const isDateInRange = ({ date, from, to, preselect }: IsDateInRangeProps): boolean => {
+export const isDateInRange = ({ date, from, to }: IsDateInRangeProps): boolean => {
   if (!from || !to) return false;
   const range = generateMonthRange(from, to);
   return range.includes(date);
@@ -140,10 +139,10 @@ export const isDateInRange = ({ date, from, to, preselect }: IsDateInRangeProps)
  * Only shows preselection when "from" is selected but "to" is not yet selected
  */
 type IsDatePreselectedProps = {
-  date: string;
-  from?: string;
-  to?: string;
-  hoveredMonth?: string;
+  date: DateFormat;
+  from?: DateFormat;
+  to?: DateFormat;
+  hoveredMonth?: DateFormat;
 };
 
 export const isDatePreselected = ({

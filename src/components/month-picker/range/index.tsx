@@ -3,7 +3,7 @@ import { useOutsideClick } from "../shared/useOutsideClick";
 import { useImmer } from "use-immer";
 import moment from "moment";
 import "moment/locale/de";
-import { MonthRangePickerProps } from "../shared/types";
+import { DateFormat, MonthRangePickerProps } from "../shared/types";
 import {
   InputContainer,
   StyledInput,
@@ -38,10 +38,10 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
   // Initialize picker-specific state
   const [pickerState, updatePickerState] = useImmer<{
     viewYears: [number, number];
-    from?: string;
-    to?: string;
+    from?: DateFormat;
+    to?: DateFormat;
     open: boolean;
-    hoveredMonth?: string;
+    hoveredMonth?: DateFormat;
   }>({
     viewYears: extractViewYearsFromDefaultDates(defaultDates),
     from: defaultDates ? defaultDates[0] : undefined,
@@ -87,7 +87,7 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
   };
 
   // Handle month selection
-  const handleSelectDate = (date: string) => {
+  const handleSelectDate = (date: DateFormat) => {
     const { from, to } = pickerState;
 
     if (!from || (from && to)) {
@@ -113,7 +113,7 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
   };
 
   // Handle hover for visualization
-  const handleDateHover = (month?: string) => {
+  const handleDateHover = (month?: DateFormat) => {
     updatePickerState((draft) => {
       draft.hoveredMonth = month;
     });
