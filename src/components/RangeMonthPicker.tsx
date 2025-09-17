@@ -1,8 +1,8 @@
-import { useMemo, useEffect, FC, useRef } from "react";
+import { useMemo, FC, useRef } from "react";
 import { useImmer } from "use-immer";
 import moment from "moment";
 import "moment/locale/de";
-import { MonthObject, NonEmptyArray, RangeMonthPickerProps } from "./types";
+import { RangeMonthPickerProps } from "./types";
 import {
   InputContainer,
   StyledInput,
@@ -15,38 +15,24 @@ import {
 } from "./styled-picker";
 import {
   getMonthsShort,
-  isMonthDisabled,
-  ymIndex,
-  isInRange,
   parseMonth,
-  generateMonthRange,
   extractViewYearsFromDefaultDates,
-  formatMonth,
+  formatDate,
   isDateDisabled,
   isDateSelected,
   generateMonthRangeTest,
   isDateInRange,
   isDatePreselected,
 } from "./picker-helper";
-import { useMonthPicker } from "./use-month-picker";
 import { HiMiniChevronLeft, HiMiniChevronRight } from "react-icons/hi2";
 import { IoCloseCircleOutline } from "react-icons/io5";
 
 const currentYear = moment().year();
 
 export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
-  const {
-    locale = "de",
-    placeholder = "Pick month range",
-    selectableMonths,
-    minDate,
-    maxDate,
-    onChange,
-    defaultDates,
-  } = props;
+  const { locale = "de", selectableMonths, minDate, maxDate, onChange, defaultDates } = props;
   const inputRef = useRef<HTMLInputElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
-  // Initialize state
 
   // Initialize picker-specific state
   const [pickerState, updatePickerState] = useImmer<{
@@ -63,11 +49,6 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
     hoveredMonth: undefined,
   });
 
-  // We no longer need to react to defaultValue changes
-  // The component should maintain its own state once mounted
-  // defaultValue should only influence the initial state
-
-  // Extend the closeWithAnimation to reset partial selection
   const handleOpenClose = () => {
     updatePickerState((draft) => {
       // Reset selection if it's partial (only "from" is selected)
@@ -105,11 +86,7 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
   };
 
   // Handle month selection
-  const handleSelectMonth = (date: string, isDisabled: boolean) => {
-    if (isDisabled) {
-      return;
-    }
-
+  const handleSelectDate = (date: string) => {
     const { from, to } = pickerState;
 
     if (!from || (from && to)) {
@@ -135,7 +112,7 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
   };
 
   // Handle hover for visualization
-  const handleMonthHover = (month?: string) => {
+  const handleDateHover = (month?: string) => {
     updatePickerState((draft) => {
       draft.hoveredMonth = month;
     });
@@ -160,7 +137,7 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
       <StyledInput
         ref={inputRef}
         readOnly
-        placeholder={placeholder}
+        placeholder={"Pick month range"}
         value={inputValue}
         onClick={handleOpenClose}
         aria-haspopup="dialog"
@@ -174,7 +151,7 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
       )}
 
       <Popup ref={popupRef} $open={pickerState.open}>
-        <div style={{ display: "flex", gap: "7.5px", boxSizing: "border-box" }}>
+        <div style={{ display: "flex", gap: "7.5px" }}>
           {pickerState.viewYears.map((viewYear, index) => {
             const from = pickerState.from;
             const to = pickerState.to;
@@ -208,29 +185,29 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
                 </YearCard>
                 <MonthsCard>
                   {months.map((label, mIndex) => {
-                    const month = formatMonth(mIndex, viewYear);
+                    const date = formatDate(mIndex, viewYear);
 
                     const isDisabled = isDateDisabled({
-                      date: month,
+                      date,
                       selectableMonths,
                       minDate,
                       maxDate,
                     });
 
                     const isSelected = isDateSelected({
-                      date: month,
+                      date,
                       from,
                       to,
                     });
 
                     const isInRange = isDateInRange({
-                      date: month,
+                      date,
                       from,
                       to,
                     });
 
                     const isPreselected = isDatePreselected({
-                      date: month,
+                      date,
                       from,
                       to,
                       hoveredMonth: pickerState.hoveredMonth,
@@ -239,10 +216,10 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
                     return (
                       <MonthTile
                         key={`range-${index}-${label}-${viewYear}`}
-                        onClick={() => handleSelectMonth(month, isDisabled)}
-                        onMouseEnter={() => handleMonthHover(month)}
+                        onClick={() => !isDisabled && handleSelectDate(date)}
+                        onMouseEnter={() => handleDateHover(date)}
                         onMouseLeave={() => {
-                          handleMonthHover();
+                          handleDateHover(date);
                         }}
                         $selected={isSelected}
                         $inRange={isInRange}

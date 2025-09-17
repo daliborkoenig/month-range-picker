@@ -32,7 +32,7 @@ function App() {
   console.log("selectedRange", selectedRange);
   return (
     <AppWrapper>
-      {/* <PickerCard>
+      <PickerCard>
         <PickerCardTitle size="medium">Single Month Picker</PickerCardTitle>
         <PickerCardContent>
           <PickerCardTitle>no default value, controls default value</PickerCardTitle>
@@ -43,15 +43,15 @@ function App() {
             }}
           />
         </PickerCardContent>
-        <PickerCardContent>
+        {/* <PickerCardContent>
           <PickerCardTitle>default value</PickerCardTitle>
           <MonthPicker
             defaultDate={selectedMonth}
             onChange={(value) => console.log("MonthPicker default value", value)}
           />
-        </PickerCardContent>
+        </PickerCardContent> */}
       </PickerCard>
-      <PickerCardSeparator /> */}
+      <PickerCardSeparator />
       <PickerCard>
         <PickerCardTitle size="medium">Range Month Picker</PickerCardTitle>
         <PickerCardContent>

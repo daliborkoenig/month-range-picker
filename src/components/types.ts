@@ -9,7 +9,6 @@ export const ANIMATION_DURATION = 200; // in ms
 export const CLOSE_DELAY = 300; // in ms
 
 export type SharedMonthPickerProps = {
-  placeholder?: string;
   locale?: "en" | "de";
   selectableMonths?: string[]; // format: "MM/YYYY"
   minDate?: string; // format: "MM/YYYY"

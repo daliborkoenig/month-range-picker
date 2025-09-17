@@ -24,7 +24,7 @@ export const generateMonthRange = (startMonth: MonthObject, endMonth: MonthObjec
   for (let i = startIndex; i <= endIndex; i++) {
     const year = Math.floor(i / 12);
     const month = i % 12;
-    result.push(formatMonth(month, year));
+    result.push(formatDate(month, year));
   }
 
   return result;
@@ -44,7 +44,7 @@ export const getMonthsShort = (loc: "en" | "de") => {
 /**
  * Formats month and year as MM/YYYY
  */
-export const formatMonth = (month: number, year: number): string => {
+export const formatDate = (month: number, year: number): string => {
   return `${String(month + 1).padStart(2, "0")}/${year}`;
 };
 
@@ -82,7 +82,7 @@ export const isMonthDisabled = ({
   minDate,
   maxDate,
 }: IsMonthDisabledProps): boolean => {
-  const monthStr = formatMonth(month, year);
+  const monthStr = formatDate(month, year);
 
   // Check if month is in disabledMonths
   if (disabledMonths?.includes(monthStr)) {

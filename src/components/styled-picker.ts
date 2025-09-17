@@ -85,9 +85,12 @@ export const ArrowButton = styled.div(({ theme }) => {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    & > svg {
+      color: ${themeColors.text};
+    }
     &:hover {
       & > svg {
-        color: red;
+        color: ${manipulateColor(themeColors.text, 80)};
       }
     }
   `;
@@ -112,8 +115,8 @@ export const MonthsCard = styled.div(() => {
 
 export const MonthTile = styled.button<{
   $selected: boolean;
-  $inRange: boolean;
-  $hovered: boolean;
+  $inRange?: boolean;
+  $hovered?: boolean;
 }>(({ $selected, $inRange, $hovered }) => {
   // Calculate background color:
   // 1. Selected months get the secondary theme color
