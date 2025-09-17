@@ -83,7 +83,6 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
       // Reset view years to previous and current year on clear
       draft.viewYears = [currentYear - 1, currentYear];
     });
-    onChange([]);
   }, [updatePickerState]);
 
   // Handle month selection - memoized

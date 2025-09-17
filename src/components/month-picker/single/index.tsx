@@ -70,7 +70,6 @@ export const SingleMonthPicker: FC<MonthPickerProps> = (props) => {
       // Reset view year to current year on clear
       draft.viewYear = currentYear;
     });
-    onChange(undefined);
   }, [updatePickerState]);
 
   // Handle month selection - memoized
