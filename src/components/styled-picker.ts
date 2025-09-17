@@ -143,7 +143,8 @@ export const MonthTile = styled.button<{
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition: background-color 0.4s ease, color 0.3s ease,
+      transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     transform: scale(1);
 
     /* Use native :disabled pseudo-class for accessibility and simplicity */
