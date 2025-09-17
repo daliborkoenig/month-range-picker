@@ -13,7 +13,6 @@ export const InputContainer = styled.div(() => {
   return css`
     position: relative;
     display: flex;
-    box-sizing: border-box;
   `;
 });
 
@@ -27,7 +26,6 @@ export const StyledInput = styled.input(() => {
     text-align: left;
     cursor: pointer;
     width: 210px;
-    box-sizing: border-box;
     ${getShadow()}
   `;
 });
@@ -60,7 +58,6 @@ export const Popup = styled.div<{
     visibility: ${$open ? "visible" : "hidden"};
     pointer-events: ${$open ? "auto" : "none"};
     transition: opacity 300ms, transform 300ms, visibility 0s ${$open ? "0s" : "300ms"};
-    box-sizing: border-box;
     top: calc(100% + 7.5px);
     left: 0;
   `;

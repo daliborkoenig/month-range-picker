@@ -31,7 +31,7 @@ const currentYear = moment().year();
 
 export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
   const { locale = "de", selectableMonths, minDate, maxDate, onChange, defaultDates } = props;
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
 
   // Initialize picker-specific state
@@ -133,9 +133,8 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
   };
 
   return (
-    <InputContainer>
+    <InputContainer ref={inputRef}>
       <StyledInput
-        ref={inputRef}
         readOnly
         placeholder={"Pick month range"}
         value={inputValue}

@@ -29,7 +29,7 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
     onChange,
     defaultDate,
   } = props;
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
   // Initialize picker-specific state
   const [pickerState, updatePickerState] = useImmer<{
@@ -89,9 +89,8 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
   };
 
   return (
-    <InputContainer>
+    <InputContainer ref={inputRef}>
       <StyledInput
-        ref={inputRef}
         readOnly
         placeholder={"Pick month"}
         value={inputValue}
