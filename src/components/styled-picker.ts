@@ -110,11 +110,12 @@ export const MonthsCard = styled.div(() => {
   `;
 });
 
-export const MonthTile = styled.button<{
+export const MonthTile = styled.div<{
   $selected: boolean;
   $inRange?: boolean;
   $hovered?: boolean;
-}>(({ $selected, $inRange, $hovered }) => {
+  $disabled?: boolean;
+}>(({ $selected, $inRange, $hovered, $disabled }) => {
   // Calculate background color:
   // 1. Selected months get the secondary theme color
   // 2. Months in range or hovered get a lighter version of secondary
@@ -134,26 +135,25 @@ export const MonthTile = styled.button<{
     border: 1px solid transparent;
     background: ${background};
     color: ${textColor};
+    font-size: 12px;
     border-radius: 6px;
     width: 100%;
-    cursor: pointer;
+    cursor: ${$disabled ? "not-allowed" : "pointer"};
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background-color 0.4s ease, color 0.3s ease,
       transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     transform: scale(1);
-
-    /* Use native :disabled pseudo-class for accessibility and simplicity */
-    &:disabled {
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
+    opacity: ${$disabled ? 0.5 : 1};
 
     /* Apply hover effects only to non-disabled months */
-    &:not(:disabled):hover {
-      background: ${manipulateColor(themeColors.secondary, 80)};
-      color: ${themeColors.text_inverted};
-    }
+    ${!$disabled &&
+    `
+      &:hover {
+        background: ${manipulateColor(themeColors.secondary, 80)};
+        color: ${themeColors.text_inverted};
+      }
+    `}
   `;
 });

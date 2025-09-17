@@ -162,7 +162,18 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
                   key={`${label}-${pickerState.viewYear}`}
                   onClick={() => !isDisabled && handleSelectDate(date)}
                   $selected={isSelected}
-                  disabled={isDisabled}
+                  $disabled={isDisabled}
+                  role="button"
+                  tabIndex={isDisabled ? -1 : 0}
+                  aria-disabled={isDisabled}
+                  aria-label={`${label} ${pickerState.viewYear}`}
+                  aria-pressed={isSelected}
+                  onKeyDown={(e) => {
+                    if ((e.key === "Enter" || e.key === " ") && !isDisabled) {
+                      e.preventDefault();
+                      handleSelectDate(date);
+                    }
+                  }}
                 >
                   {label}
                 </MonthTile>

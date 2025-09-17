@@ -238,7 +238,18 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
                         $selected={isSelected}
                         $inRange={isInRange}
                         $hovered={isPreselected}
-                        disabled={isDisabled}
+                        $disabled={isDisabled}
+                        role="button"
+                        tabIndex={isDisabled ? -1 : 0}
+                        aria-disabled={isDisabled}
+                        aria-label={`${label} ${viewYear}`}
+                        aria-pressed={isSelected}
+                        onKeyDown={(e) => {
+                          if ((e.key === "Enter" || e.key === " ") && !isDisabled) {
+                            e.preventDefault();
+                            handleSelectDate(date);
+                          }
+                        }}
                       >
                         {label}
                       </MonthTile>
