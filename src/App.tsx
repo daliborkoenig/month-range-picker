@@ -43,13 +43,13 @@ function App() {
             }}
           />
         </PickerCardContent>
-        {/* <PickerCardContent>
+        <PickerCardContent>
           <PickerCardTitle>default value</PickerCardTitle>
           <MonthPicker
             defaultDate={selectedMonth}
             onChange={(value) => console.log("MonthPicker default value", value)}
           />
-        </PickerCardContent> */}
+        </PickerCardContent>
       </PickerCard>
       <PickerCardSeparator />
       <PickerCard>
@@ -62,18 +62,16 @@ function App() {
               console.log("MonthRangePicker no default value", value);
               setSelectedRange(value);
             }}
-            minDate="01/2025"
-            maxDate="12/2025"
           />
         </PickerCardContent>
-        {/* <PickerCardContent>
+        <PickerCardContent>
           <PickerCardTitle>default value</PickerCardTitle>
           <MonthPicker
             range
             defaultDates={selectedRange}
             onChange={(value) => console.log("MonthRangePicker default value", value)}
           />
-        </PickerCardContent> */}
+        </PickerCardContent>
       </PickerCard>
     </AppWrapper>
   );
