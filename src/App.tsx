@@ -8,6 +8,7 @@ import {
   PickerCardSeparator,
   PickerCardTitle,
 } from "./globalStyles";
+import { NonEmptyArray } from "./components/types";
 
 const styleText = {
   fontSize: "10px",
@@ -23,7 +24,7 @@ const styleFlex = {
 
 function App() {
   const [selectedMonth, setSelectedMonth] = useState<string>(moment().format("MM/YYYY"));
-  const [selectedRange, setSelectedRange] = useState<string[]>([
+  const [selectedRange, setSelectedRange] = useState<NonEmptyArray<string>>([
     moment().format("MM/YYYY"),
     moment().add(14, "month").format("MM/YYYY"),
   ]);
@@ -31,7 +32,7 @@ function App() {
   console.log("selectedRange", selectedRange);
   return (
     <AppWrapper>
-      <PickerCard>
+      {/* <PickerCard>
         <PickerCardTitle size="medium">Single Month Picker</PickerCardTitle>
         <PickerCardContent>
           <PickerCardTitle>no default value, controls default value</PickerCardTitle>
@@ -45,12 +46,12 @@ function App() {
         <PickerCardContent>
           <PickerCardTitle>default value</PickerCardTitle>
           <MonthPicker
-            defaultValue={selectedMonth}
+            defaultDate={selectedMonth}
             onChange={(value) => console.log("MonthPicker default value", value)}
           />
         </PickerCardContent>
       </PickerCard>
-      <PickerCardSeparator />
+      <PickerCardSeparator /> */}
       <PickerCard>
         <PickerCardTitle size="medium">Range Month Picker</PickerCardTitle>
         <PickerCardContent>
@@ -61,16 +62,18 @@ function App() {
               console.log("MonthRangePicker no default value", value);
               setSelectedRange(value);
             }}
+            minDate="01/2025"
+            maxDate="12/2025"
           />
         </PickerCardContent>
-        <PickerCardContent>
+        {/* <PickerCardContent>
           <PickerCardTitle>default value</PickerCardTitle>
           <MonthPicker
             range
-            defaultValue={selectedRange}
+            defaultDates={selectedRange}
             onChange={(value) => console.log("MonthRangePicker default value", value)}
           />
-        </PickerCardContent>
+        </PickerCardContent> */}
       </PickerCard>
     </AppWrapper>
   );

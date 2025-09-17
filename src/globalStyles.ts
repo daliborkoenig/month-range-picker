@@ -6,10 +6,14 @@ export const GlobalStyle = createGlobalStyle`
     height: 100%;
   }
   body {
-    margin: 0;
     font-family: 'Lato', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
     background: #ffffff;
     color: #4c4c4c;
+    line-height: 1.5;
+  }
+  * {    
+    margin: 0;
+    box-sizing: border-box;
   }
 `;
 

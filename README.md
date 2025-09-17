@@ -51,7 +51,7 @@ function RangeExample() {
 | ---------------- | ------------------------- | ----------- | ----------------------------------------------- |
 | `range`          | `false` or omitted        | `false`     | Set to false or omit for single month selection |
 | `onChange`       | `(value: string) => void` | required    | Callback when a month is selected               |
-| `defaultValue`   | `string`                  | `undefined` | Default selected month (format: "MM/YYYY")      |
+| `defaultDate`    | `string`                  | `undefined` | Default selected month (format: "MM/YYYY")      |
 | `disabledMonths` | `string[]`                | `undefined` | Array of months to disable (format: "MM/YYYY")  |
 
 ### Range Picker Props
@@ -60,7 +60,7 @@ function RangeExample() {
 | -------------- | --------------------------- | ----------- | ------------------------------------------------- |
 | `range`        | `true`                      | required    | Set to true for range selection                   |
 | `onChange`     | `(value: string[]) => void` | required    | Callback with array of all months in range        |
-| `defaultValue` | `string[]`                  | `undefined` | Default selected range (format: ["MM/YYYY", ...]) |
+| `defaultDates` | `string[]`                  | `undefined` | Default selected range (format: ["MM/YYYY", ...]) |
 
 ## Examples
 

@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import { AnimationState } from "./types";
+import { themeColors, manipulateColor } from "../theme/defaultColors";
 
 const RADIUS = "7.5px";
 
@@ -23,7 +23,7 @@ export const StyledInput = styled.input(() => {
     padding: 8px 10px;
     border-radius: ${RADIUS};
     background: #ffffff;
-    color: #4c4c4c;
+    color: ${themeColors.text};
     text-align: left;
     cursor: pointer;
     width: 210px;
@@ -35,12 +35,12 @@ export const StyledInput = styled.input(() => {
 export const ClearButton = styled.button(() => {
   return css`
     position: absolute;
-    right: 8px;
+    right: 5px;
     top: 50%;
     transform: translateY(-50%);
     border: none;
     background: transparent;
-    color: #6b7280;
+    color: ${themeColors.text};
     cursor: pointer;
     padding: 4px;
     display: flex;
@@ -50,29 +50,16 @@ export const ClearButton = styled.button(() => {
 });
 
 export const Popup = styled.div<{
-  $animationState: AnimationState;
-  $range?: boolean;
-  $position?: { top: number; left: number };
-}>(({ $animationState, $range, $position }) => {
+  $open: boolean;
+}>(({ $open }) => {
   return css`
     position: absolute;
     z-index: 1000;
-    opacity: ${$animationState === "entering"
-      ? "0"
-      : $animationState === "visible"
-      ? "1"
-      : $animationState === "exiting"
-      ? "0"
-      : "0"};
-    transform: ${$animationState === "entering"
-      ? "translateY(10px)"
-      : $animationState === "visible"
-      ? "translateY(0)"
-      : $animationState === "exiting"
-      ? "translateY(10px)"
-      : "translateY(10px)"};
-    transition: all 300ms cubic-bezier(0.25, 0.1, 0.25, 1);
-    display: ${$animationState === "closed" ? "none" : "block"};
+    opacity: ${$open ? 1 : 0};
+    transform: ${$open ? "translateY(0)" : "translateY(10px)"};
+    visibility: ${$open ? "visible" : "hidden"};
+    pointer-events: ${$open ? "auto" : "none"};
+    transition: opacity 300ms, transform 300ms, visibility 0s ${$open ? "0s" : "300ms"};
     box-sizing: border-box;
     top: calc(100% + 7.5px);
     left: 0;
@@ -124,15 +111,23 @@ export const MonthsCard = styled.div(() => {
 });
 
 export const MonthTile = styled.button<{
-  $active: boolean;
+  $selected: boolean;
   $inRange: boolean;
   $disabled: boolean;
   $hovered: boolean;
-}>(({ $active, $inRange, $disabled, $hovered }) => {
+}>(({ $selected, $inRange, $disabled, $hovered }) => {
   return css`
     border: 1px solid transparent;
-    background: ${$active ? "#4f5dff" : $inRange ? "#4f5dff" : $hovered ? "#e0e7ff" : "#ffffff"};
-    color: ${$disabled ? "#9ca3af" : $active || $inRange ? "#ffffff" : "#4c4c4c"};
+    background: ${$selected
+      ? themeColors.secondary
+      : $inRange || $hovered
+      ? manipulateColor(themeColors.secondary, 80)
+      : themeColors.text_inverted};
+    color: ${$disabled
+      ? manipulateColor(themeColors.text_inverted, 120)
+      : $selected || $inRange || $hovered
+      ? themeColors.text_inverted
+      : themeColors.text};
     border-radius: 6px;
     width: 100%;
     cursor: ${$disabled ? "not-allowed" : "pointer"};
@@ -144,8 +139,11 @@ export const MonthTile = styled.button<{
     transform: scale(1);
 
     &:hover {
-      background: ${$disabled ? "#ffffff" : $active ? "#4f5dff" : "#e0e7ff"};
-      transform: ${$disabled ? "scale(1)" : "scale(1.05)"};
+      ${!$disabled &&
+      `
+        background: ${manipulateColor(themeColors.secondary, 80)};
+        color: ${themeColors.text_inverted};
+      `}
     }
   `;
 });

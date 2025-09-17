@@ -1,8 +1,8 @@
 import { ReactNode, RefObject } from "react";
 
-export type MonthObject = { year: number; month: number };
+export type NonEmptyArray<T> = [T, ...T[]];
 
-export type AnimationState = "entering" | "visible" | "exiting" | "closed";
+export type MonthObject = { year: number; month: number };
 
 // Fixed component constants
 export const ANIMATION_DURATION = 200; // in ms
@@ -18,15 +18,15 @@ export type SharedMonthPickerProps = {
 
 // Props definition for range month picker
 export interface RangeMonthPickerProps extends SharedMonthPickerProps {
-  onChange: (value: string[]) => void; // Array of all months in range, format: ["MM/YYYY", "MM/YYYY", ...]
-  defaultValue?: string[]; // format: ["MM/YYYY", "MM/YYYY"]
+  onChange: (value: NonEmptyArray<string>) => void; // Array of all months in range, format: ["MM/YYYY", "MM/YYYY", ...]
+  defaultDates?: NonEmptyArray<string>; // format: ["MM/YYYY", "MM/YYYY"]
   range: true;
 }
 
 // Props definition for single month picker
 export interface SingleMonthPickerProps extends SharedMonthPickerProps {
   onChange: (value: string) => void;
-  defaultValue?: string; // format: "MM/YYYY"
+  defaultDate?: string; // format: "MM/YYYY"
   disabledMonths?: string[]; // format: "MM/YYYY"
   range?: false;
 }

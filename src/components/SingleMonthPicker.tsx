@@ -25,7 +25,7 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
     minDate,
     maxDate,
     onChange,
-    defaultValue,
+    defaultDate,
   } = props;
 
   // Get shared picker functionality
@@ -38,13 +38,9 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
     hoveredMonth: MonthObject | null;
   }>({
     viewYear: new Date().getFullYear(),
-    selection: defaultValue ? parseMonth(defaultValue) : null,
+    selection: defaultDate ? parseMonth(defaultDate) : null,
     hoveredMonth: null,
   });
-
-  // We no longer need to react to defaultValue changes
-  // The component should maintain its own state once mounted
-  // defaultValue should only influence the initial state
 
   // Memoized values
   moment.locale(locale);
@@ -175,7 +171,7 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
                         draft.hoveredMonth = null;
                       });
                     }}
-                    $active={!!isActive}
+                    $selected={!!isActive}
                     $inRange={false}
                     $disabled={!!isDisabled}
                     $hovered={!!isHovered}
