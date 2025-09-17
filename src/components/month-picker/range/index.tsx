@@ -1,4 +1,4 @@
-import { useMemo, FC, useRef } from "react";
+import { useMemo, FC, useRef, useCallback } from "react";
 import { useOutsideClick } from "../shared/useOutsideClick";
 import { useImmer } from "use-immer";
 import moment from "moment";
@@ -50,7 +50,7 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
     hoveredMonth: undefined,
   });
 
-  const handleOpenClose = () => {
+  const handleOpenClose = useCallback(() => {
     updatePickerState((draft) => {
       // Reset selection if it's partial (only "from" is selected)
       if (draft.from && !draft.to) {
@@ -59,10 +59,9 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
       }
       draft.open = !draft.open;
     });
-  };
+  }, [updatePickerState]);
 
   // Memoized values
-  // moment.locale(locale);
   const months = useMemo(() => getMonthsShort(locale), [locale]);
 
   // Calculate input label
@@ -76,69 +75,79 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
     }`;
   }, [pickerState, months]);
 
-  // Clear selection
-  const clearSelection = () => {
+  // Clear selection - memoized
+  const clearSelection = useCallback(() => {
     updatePickerState((draft) => {
       draft.from = undefined;
       draft.to = undefined;
       // Reset view years to previous and current year on clear
       draft.viewYears = [currentYear - 1, currentYear];
     });
-  };
+    onChange([]);
+  }, [updatePickerState]);
 
-  // Handle month selection
-  const handleSelectDate = (date: DateFormat) => {
-    const { from, to } = pickerState;
+  // Handle month selection - memoized
+  const handleSelectDate = useCallback(
+    (date: DateFormat) => {
+      const { from, to } = pickerState;
 
-    if (!from || (from && to)) {
-      // First selection or resetting after a complete range
-      updatePickerState((draft) => {
-        draft.from = date;
-        draft.to = undefined;
-      });
-    } else {
-      // Second selection - we already have "from" but not "to"
-      const isBefore = moment(date, "MM/YYYY").isBefore(moment(from, "MM/YYYY"));
-      const newFrom = isBefore ? date : from;
-      const newTo = isBefore ? from : date;
-      updatePickerState((draft) => {
-        draft.from = newFrom;
-        draft.to = newTo;
-        draft.open = false;
-      });
+      if (!from || (from && to)) {
+        // First selection or resetting after a complete range
+        updatePickerState((draft) => {
+          draft.from = date;
+          draft.to = undefined;
+        });
+      } else {
+        // Second selection - we already have "from" but not "to"
+        const isBefore = moment(date, "MM/YYYY").isBefore(moment(from, "MM/YYYY"));
+        const newFrom = isBefore ? date : from;
+        const newTo = isBefore ? from : date;
+        updatePickerState((draft) => {
+          draft.from = newFrom;
+          draft.to = newTo;
+          draft.open = false;
+        });
 
-      // Use the calculated values directly to ensure we have the updated values
-      onChange(generateMonthRange(newFrom, newTo));
-    }
-  };
-
-  // Handle hover for visualization
-  const handleDateHover = (month?: DateFormat) => {
-    updatePickerState((draft) => {
-      draft.hoveredMonth = month;
-    });
-  };
-
-  // Handle year changes
-  const handleYearChange = (columnIndex: 0 | 1, newYear: number) => {
-    updatePickerState((draft) => {
-      // If changing right column, ensure it's greater than or equal to left column + 1
-      if (columnIndex === 1) {
-        draft.viewYears[1] = Math.max(newYear, draft.viewYears[0] + 1);
+        // Use the calculated values directly to ensure we have the updated values
+        onChange(generateMonthRange(newFrom, newTo));
       }
-      // If changing left column, ensure it's less than or equal to right column - 1
-      else if (columnIndex === 0) {
-        draft.viewYears[0] = Math.min(newYear, draft.viewYears[1] - 1);
-      }
-    });
-  };
+    },
+    [pickerState, updatePickerState, onChange]
+  );
 
-  // Close popup handler
-  const handleClose = () => {
+  // Handle hover for visualization - memoized
+  const handleDateHover = useCallback(
+    (month?: DateFormat) => {
+      updatePickerState((draft) => {
+        draft.hoveredMonth = month;
+      });
+    },
+    [updatePickerState]
+  );
+
+  // Handle year changes - memoized
+  const handleYearChange = useCallback(
+    (columnIndex: 0 | 1, newYear: number) => {
+      updatePickerState((draft) => {
+        // If changing right column, ensure it's greater than or equal to left column + 1
+        if (columnIndex === 1) {
+          draft.viewYears[1] = Math.max(newYear, draft.viewYears[0] + 1);
+        }
+        // If changing left column, ensure it's less than or equal to right column - 1
+        else if (columnIndex === 0) {
+          draft.viewYears[0] = Math.min(newYear, draft.viewYears[1] - 1);
+        }
+      });
+    },
+    [updatePickerState]
+  );
+
+  // Close popup handler - memoized
+  const handleClose = useCallback(() => {
     updatePickerState((draft) => {
       draft.open = false;
     });
-  };
+  }, [updatePickerState]);
 
   // Use the outside click hook
   useOutsideClick({
@@ -146,7 +155,6 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
     isOpen: pickerState.open,
     onClose: handleClose,
   });
-  console.log("defaultDates", defaultDates);
 
   return (
     <InputContainer ref={inputRef} key={defaultDates?.join(",")}>
@@ -199,63 +207,79 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
                   </ArrowButton>
                 </YearCard>
                 <MonthsCard>
-                  {months.map((label, mIndex) => {
-                    const date = formatDate(mIndex, viewYear);
+                  {useMemo(
+                    () =>
+                      months.map((label, mIndex) => {
+                        const date = formatDate(mIndex, viewYear);
 
-                    const isDisabled = isDateDisabled({
-                      date,
+                        const isDisabled = isDateDisabled({
+                          date,
+                          selectableMonths,
+                          minDate,
+                          maxDate,
+                        });
+
+                        const isSelected = isDateSelected({
+                          date,
+                          from,
+                          to,
+                        });
+
+                        const isInRange = isDateInRange({
+                          date,
+                          from,
+                          to,
+                        });
+
+                        const isPreselected = isDatePreselected({
+                          date,
+                          from,
+                          to,
+                          hoveredMonth: pickerState.hoveredMonth,
+                        });
+
+                        return (
+                          <MonthTile
+                            key={`range-${index}-${label}-${viewYear}`}
+                            onClick={() => !isDisabled && handleSelectDate(date)}
+                            onMouseEnter={() => handleDateHover(date)}
+                            onMouseLeave={() => {
+                              handleDateHover(date);
+                            }}
+                            $selected={isSelected}
+                            $inRange={isInRange}
+                            $hovered={isPreselected}
+                            $disabled={isDisabled}
+                            role="button"
+                            tabIndex={isDisabled ? -1 : 0}
+                            aria-disabled={isDisabled}
+                            aria-label={`${label} ${viewYear}`}
+                            aria-pressed={isSelected}
+                            onKeyDown={(e) => {
+                              if ((e.key === "Enter" || e.key === " ") && !isDisabled) {
+                                e.preventDefault();
+                                handleSelectDate(date);
+                              }
+                            }}
+                          >
+                            {label}
+                          </MonthTile>
+                        );
+                      }),
+                    [
+                      months,
+                      viewYear,
                       selectableMonths,
                       minDate,
                       maxDate,
-                    });
-
-                    const isSelected = isDateSelected({
-                      date,
                       from,
                       to,
-                    });
-
-                    const isInRange = isDateInRange({
-                      date,
-                      from,
-                      to,
-                    });
-
-                    const isPreselected = isDatePreselected({
-                      date,
-                      from,
-                      to,
-                      hoveredMonth: pickerState.hoveredMonth,
-                    });
-
-                    return (
-                      <MonthTile
-                        key={`range-${index}-${label}-${viewYear}`}
-                        onClick={() => !isDisabled && handleSelectDate(date)}
-                        onMouseEnter={() => handleDateHover(date)}
-                        onMouseLeave={() => {
-                          handleDateHover(date);
-                        }}
-                        $selected={isSelected}
-                        $inRange={isInRange}
-                        $hovered={isPreselected}
-                        $disabled={isDisabled}
-                        role="button"
-                        tabIndex={isDisabled ? -1 : 0}
-                        aria-disabled={isDisabled}
-                        aria-label={`${label} ${viewYear}`}
-                        aria-pressed={isSelected}
-                        onKeyDown={(e) => {
-                          if ((e.key === "Enter" || e.key === " ") && !isDisabled) {
-                            e.preventDefault();
-                            handleSelectDate(date);
-                          }
-                        }}
-                      >
-                        {label}
-                      </MonthTile>
-                    );
-                  })}
+                      pickerState.hoveredMonth,
+                      handleSelectDate,
+                      handleDateHover,
+                      index,
+                    ]
+                  )}
                 </MonthsCard>
               </div>
             );

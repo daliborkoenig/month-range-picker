@@ -1,4 +1,4 @@
-import { useMemo, FC, useRef } from "react";
+import { useMemo, FC, useRef, useCallback } from "react";
 import { useOutsideClick } from "../shared/useOutsideClick";
 import { useImmer } from "use-immer";
 import moment from "moment";
@@ -43,14 +43,13 @@ export const SingleMonthPicker: FC<MonthPickerProps> = (props) => {
     open: false,
   });
 
-  const handleOpenClose = () => {
+  const handleOpenClose = useCallback(() => {
     updatePickerState((draft) => {
       draft.open = !draft.open;
     });
-  };
+  }, [updatePickerState]);
 
   // Memoized values
-  moment.locale(locale);
   const months = useMemo(() => getMonthsShort(locale), [locale]);
 
   // Calculate input label
@@ -64,37 +63,44 @@ export const SingleMonthPicker: FC<MonthPickerProps> = (props) => {
     return `${months[parsed.month]} ${parsed.year}`;
   }, [pickerState.date, months]);
 
-  // Handle selection clearing
-  const clearSelection = () => {
+  // Handle selection clearing - memoized
+  const clearSelection = useCallback(() => {
     updatePickerState((draft) => {
       draft.date = undefined;
       // Reset view year to current year on clear
       draft.viewYear = currentYear;
     });
-  };
+    onChange(undefined);
+  }, [updatePickerState]);
 
-  // Handle month selection
-  const handleSelectDate = (date: DateFormat) => {
+  // Handle month selection - memoized
+  const handleSelectDate = useCallback(
+    (date: DateFormat) => {
+      updatePickerState((draft) => {
+        draft.date = date;
+        draft.open = false;
+      });
+      onChange(date);
+    },
+    [updatePickerState, onChange]
+  );
+
+  // Handle year change - memoized
+  const handleYearChange = useCallback(
+    (newYear: number) => {
+      updatePickerState((draft) => {
+        draft.viewYear = newYear;
+      });
+    },
+    [updatePickerState]
+  );
+
+  // Close popup handler - memoized
+  const handleClose = useCallback(() => {
     updatePickerState((draft) => {
-      draft.date = date;
       draft.open = false;
     });
-    onChange(date);
-  };
-
-  // Handle year change
-  const handleYearChange = (newYear: number) => {
-    updatePickerState((draft) => {
-      draft.viewYear = newYear;
-    });
-  };
-
-  // Close popup handler
-  const handleClose = () => {
-    updatePickerState((draft) => {
-      draft.open = false;
-    });
-  };
+  }, [updatePickerState]);
 
   // Use the outside click hook
   useOutsideClick({
@@ -144,41 +150,54 @@ export const SingleMonthPicker: FC<MonthPickerProps> = (props) => {
             </ArrowButton>
           </YearCard>
           <MonthsCard>
-            {months.map((label, mIndex) => {
-              const date = formatDate(mIndex, pickerState.viewYear);
+            {useMemo(
+              () =>
+                months.map((label, mIndex) => {
+                  const date = formatDate(mIndex, pickerState.viewYear);
 
-              const isDisabled = isDateDisabled({
-                date,
+                  const isDisabled = isDateDisabled({
+                    date,
+                    disabledMonths,
+                    selectableMonths,
+                    minDate,
+                    maxDate,
+                  });
+
+                  const isSelected = pickerState.date === date;
+
+                  return (
+                    <MonthTile
+                      key={`${label}-${pickerState.viewYear}`}
+                      onClick={() => !isDisabled && handleSelectDate(date)}
+                      $selected={isSelected}
+                      $disabled={isDisabled}
+                      role="button"
+                      tabIndex={isDisabled ? -1 : 0}
+                      aria-disabled={isDisabled}
+                      aria-label={`${label} ${pickerState.viewYear}`}
+                      aria-pressed={isSelected}
+                      onKeyDown={(e) => {
+                        if ((e.key === "Enter" || e.key === " ") && !isDisabled) {
+                          e.preventDefault();
+                          handleSelectDate(date);
+                        }
+                      }}
+                    >
+                      {label}
+                    </MonthTile>
+                  );
+                }),
+              [
+                months,
+                pickerState.viewYear,
+                pickerState.date,
                 disabledMonths,
                 selectableMonths,
                 minDate,
                 maxDate,
-              });
-
-              const isSelected = pickerState.date === date;
-
-              return (
-                <MonthTile
-                  key={`${label}-${pickerState.viewYear}`}
-                  onClick={() => !isDisabled && handleSelectDate(date)}
-                  $selected={isSelected}
-                  $disabled={isDisabled}
-                  role="button"
-                  tabIndex={isDisabled ? -1 : 0}
-                  aria-disabled={isDisabled}
-                  aria-label={`${label} ${pickerState.viewYear}`}
-                  aria-pressed={isSelected}
-                  onKeyDown={(e) => {
-                    if ((e.key === "Enter" || e.key === " ") && !isDisabled) {
-                      e.preventDefault();
-                      handleSelectDate(date);
-                    }
-                  }}
-                >
-                  {label}
-                </MonthTile>
-              );
-            })}
+                handleSelectDate,
+              ]
+            )}
           </MonthsCard>
         </div>
       </Popup>
