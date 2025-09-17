@@ -113,37 +113,46 @@ export const MonthsCard = styled.div(() => {
 export const MonthTile = styled.button<{
   $selected: boolean;
   $inRange: boolean;
-  $disabled: boolean;
   $hovered: boolean;
-}>(({ $selected, $inRange, $disabled, $hovered }) => {
+}>(({ $selected, $inRange, $hovered }) => {
+  // Calculate background color:
+  // 1. Selected months get the secondary theme color
+  // 2. Months in range or hovered get a lighter version of secondary
+  // 3. Default is white background
+  const background = $selected
+    ? themeColors.secondary
+    : $inRange || $hovered
+    ? manipulateColor(themeColors.secondary, 80)
+    : themeColors.text_inverted;
+
+  // Calculate text color:
+  // - If month has a colored background (selected/range/hovered) use white text
+  // - Otherwise use standard text color
+  const textColor =
+    $selected || $inRange || $hovered ? themeColors.text_inverted : themeColors.text;
   return css`
     border: 1px solid transparent;
-    background: ${$selected
-      ? themeColors.secondary
-      : $inRange || $hovered
-      ? manipulateColor(themeColors.secondary, 80)
-      : themeColors.text_inverted};
-    color: ${$disabled
-      ? manipulateColor(themeColors.text_inverted, 120)
-      : $selected || $inRange || $hovered
-      ? themeColors.text_inverted
-      : themeColors.text};
+    background: ${background};
+    color: ${textColor};
     border-radius: 6px;
     width: 100%;
-    cursor: ${$disabled ? "not-allowed" : "pointer"};
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: ${$disabled ? 0.5 : 1};
     transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
     transform: scale(1);
 
-    &:hover {
-      ${!$disabled &&
-      `
-        background: ${manipulateColor(themeColors.secondary, 80)};
-        color: ${themeColors.text_inverted};
-      `}
+    /* Use native :disabled pseudo-class for accessibility and simplicity */
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    /* Apply hover effects only to non-disabled months */
+    &:not(:disabled):hover {
+      background: ${manipulateColor(themeColors.secondary, 80)};
+      color: ${themeColors.text_inverted};
     }
   `;
 });

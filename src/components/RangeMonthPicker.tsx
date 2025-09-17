@@ -244,10 +244,10 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
                         onMouseLeave={() => {
                           handleMonthHover();
                         }}
-                        $selected={!!isSelected}
-                        $inRange={!!isInRange}
-                        $disabled={!!isDisabled}
-                        $hovered={!!isPreselected}
+                        $selected={isSelected}
+                        $inRange={isInRange}
+                        $hovered={isPreselected}
+                        disabled={isDisabled}
                       >
                         {label}
                       </MonthTile>
