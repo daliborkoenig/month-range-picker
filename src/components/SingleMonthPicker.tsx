@@ -1,4 +1,5 @@
 import { useMemo, FC, useRef } from "react";
+import { useOutsideClick } from "./hooks/useOutsideClick";
 import { useImmer } from "use-immer";
 import moment from "moment";
 import "moment/locale/de";
@@ -87,6 +88,20 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
       draft.viewYear = newYear;
     });
   };
+
+  // Close popup handler
+  const handleClose = () => {
+    updatePickerState((draft) => {
+      draft.open = false;
+    });
+  };
+
+  // Use the outside click hook
+  useOutsideClick({
+    refs: [inputRef, popupRef],
+    isOpen: pickerState.open,
+    onClose: handleClose,
+  });
 
   return (
     <InputContainer ref={inputRef}>
