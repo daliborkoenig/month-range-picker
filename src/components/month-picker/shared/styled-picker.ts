@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import { themeColors, manipulateColor } from "../theme/defaultColors";
+import { themeColors, manipulateColor } from "../../../theme/defaultColors";
 
 const RADIUS = "7.5px";
 

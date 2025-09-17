@@ -1,9 +1,9 @@
 import { useMemo, FC, useRef } from "react";
-import { useOutsideClick } from "./hooks/useOutsideClick";
+import { useOutsideClick } from "../shared/useOutsideClick";
 import { useImmer } from "use-immer";
 import moment from "moment";
 import "moment/locale/de";
-import { SingleMonthPickerProps } from "./types";
+import { MonthPickerProps } from "../shared/types";
 import {
   InputContainer,
   StyledInput,
@@ -13,14 +13,14 @@ import {
   ArrowButton,
   MonthsCard,
   MonthTile,
-} from "./styled-picker";
-import { getMonthsShort, formatDate, isDateDisabled, parseMonth } from "./picker-helper";
+} from "../shared/styled-picker";
+import { getMonthsShort, formatDate, isDateDisabled, parseMonth } from "../shared/utils";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { HiMiniChevronLeft, HiMiniChevronRight } from "react-icons/hi2";
 
 const currentYear = moment().year();
 
-export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
+export const SingleMonthPicker: FC<MonthPickerProps> = (props) => {
   const {
     locale = "de",
     disabledMonths,
@@ -104,7 +104,7 @@ export const SingleMonthPicker: FC<SingleMonthPickerProps> = (props) => {
   });
 
   return (
-    <InputContainer ref={inputRef}>
+    <InputContainer ref={inputRef} key={defaultDate}>
       <StyledInput
         readOnly
         placeholder={"Pick month"}

@@ -1,9 +1,9 @@
 import { useMemo, FC, useRef } from "react";
-import { useOutsideClick } from "./hooks/useOutsideClick";
+import { useOutsideClick } from "../shared/useOutsideClick";
 import { useImmer } from "use-immer";
 import moment from "moment";
 import "moment/locale/de";
-import { RangeMonthPickerProps } from "./types";
+import { MonthRangePickerProps } from "../shared/types";
 import {
   InputContainer,
   StyledInput,
@@ -13,7 +13,7 @@ import {
   ArrowButton,
   MonthsCard,
   MonthTile,
-} from "./styled-picker";
+} from "../shared/styled-picker";
 import {
   getMonthsShort,
   parseMonth,
@@ -24,13 +24,13 @@ import {
   generateMonthRange,
   isDateInRange,
   isDatePreselected,
-} from "./picker-helper";
+} from "../shared/utils";
 import { HiMiniChevronLeft, HiMiniChevronRight } from "react-icons/hi2";
 import { IoCloseCircleOutline } from "react-icons/io5";
 
 const currentYear = moment().year();
 
-export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
+export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
   const { locale = "de", selectableMonths, minDate, maxDate, onChange, defaultDates } = props;
   const inputRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -146,9 +146,10 @@ export const RangeMonthPicker: FC<RangeMonthPickerProps> = (props) => {
     isOpen: pickerState.open,
     onClose: handleClose,
   });
+  console.log("defaultDates", defaultDates);
 
   return (
-    <InputContainer ref={inputRef}>
+    <InputContainer ref={inputRef} key={defaultDates?.join(",")}>
       <StyledInput
         readOnly
         placeholder={"Pick month range"}

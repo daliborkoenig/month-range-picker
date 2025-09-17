@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MonthPicker } from "./components/MonthPicker";
+import { MonthPicker, MonthRangePicker } from "./components/month-picker";
 import moment from "moment";
 import {
   AppWrapper,
@@ -8,7 +8,7 @@ import {
   PickerCardSeparator,
   PickerCardTitle,
 } from "./globalStyles";
-import { NonEmptyArray } from "./components/types";
+import { NonEmptyArray } from "./components/month-picker/shared/types";
 
 const styleText = {
   fontSize: "10px",
@@ -28,8 +28,7 @@ function App() {
     moment().format("MM/YYYY"),
     moment().add(14, "month").format("MM/YYYY"),
   ]);
-  console.log("selectedMonth", selectedMonth);
-  console.log("selectedRange", selectedRange);
+
   return (
     <AppWrapper>
       <PickerCard>
@@ -56,8 +55,7 @@ function App() {
         <PickerCardTitle size="medium">Range Month Picker</PickerCardTitle>
         <PickerCardContent>
           <PickerCardTitle>no default value, controls default value</PickerCardTitle>
-          <MonthPicker
-            range
+          <MonthRangePicker
             onChange={(value) => {
               console.log("MonthRangePicker no default value", value);
               setSelectedRange(value);
@@ -66,8 +64,7 @@ function App() {
         </PickerCardContent>
         <PickerCardContent>
           <PickerCardTitle>default value</PickerCardTitle>
-          <MonthPicker
-            range
+          <MonthRangePicker
             defaultDates={selectedRange}
             onChange={(value) => console.log("MonthRangePicker default value", value)}
           />
