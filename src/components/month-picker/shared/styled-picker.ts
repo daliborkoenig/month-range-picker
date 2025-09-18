@@ -49,17 +49,33 @@ export const ClearButton = styled.button(() => {
 
 export const Popup = styled.div<{
   $open: boolean;
-}>(({ $open }) => {
+  $top?: number;
+  $left?: number;
+  $right?: number;
+  $position?: "top" | "bottom";
+}>(({ $open, $top, $left, $right, $position = "bottom" }) => {
+  // Apply different margin and transform based on position
+  const margin = "7.5px";
+  const transformOrigin = $position === "top" ? "bottom" : "top";
+
   return css`
-    position: absolute;
+    position: fixed;
     z-index: 1000;
     opacity: ${$open ? 1 : 0};
-    transform: ${$open ? "translateY(0)" : "translateY(10px)"};
+    transform: ${$open
+      ? "translateY(0)"
+      : $position === "top"
+      ? "translateY(-10px)"
+      : "translateY(10px)"};
+    transform-origin: ${transformOrigin};
     visibility: ${$open ? "visible" : "hidden"};
     pointer-events: ${$open ? "auto" : "none"};
     transition: opacity 300ms, transform 300ms, visibility 0s ${$open ? "0s" : "300ms"};
-    top: calc(100% + 7.5px);
-    left: 0;
+    ${$position === "bottom" && $top !== undefined ? `top: calc(${$top}px + ${margin});` : ""}
+    ${$position === "top" && $top !== undefined ? `top: calc(${$top}px - ${margin});` : ""}
+    ${$top === undefined ? "top: auto;" : ""}
+    ${$left !== undefined ? `left: ${$left}px;` : ""}
+    ${$right !== undefined ? `right: ${$right}px;` : ""}
   `;
 });
 

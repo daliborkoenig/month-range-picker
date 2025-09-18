@@ -24,8 +24,8 @@ export const AppWrapper = styled.div(() => {
   return css`
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-end;
+    justify-content: flex-end;
     gap: 16px;
     background-color: #ffffff;
     width: 100%;

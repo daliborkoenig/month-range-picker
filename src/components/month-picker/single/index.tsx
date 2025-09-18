@@ -17,6 +17,7 @@ import {
 import { getMonthsShort, formatDate, isDateDisabled, parseMonth } from "../shared/utils";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { HiMiniChevronLeft, HiMiniChevronRight } from "react-icons/hi2";
+import { usePopupPosition } from "../shared/usePopupPosition";
 
 const currentYear = moment().year();
 
@@ -109,6 +110,8 @@ export const SingleMonthPicker: FC<MonthPickerProps> = (props) => {
     onClose: handleClose,
   });
 
+  const popupPosition = usePopupPosition(pickerState.open, inputRef, popupRef);
+
   return (
     <InputContainer ref={inputRef} key={defaultDate}>
       <StyledInput
@@ -126,7 +129,14 @@ export const SingleMonthPicker: FC<MonthPickerProps> = (props) => {
         </ClearButton>
       )}
 
-      <Popup ref={popupRef} $open={pickerState.open}>
+      <Popup
+        ref={popupRef}
+        $open={pickerState.open}
+        $top={popupPosition.top}
+        $left={popupPosition.left}
+        $right={popupPosition.right}
+        $position={popupPosition.position}
+      >
         <div
           style={{
             display: "flex",

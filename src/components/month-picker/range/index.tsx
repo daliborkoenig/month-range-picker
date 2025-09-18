@@ -27,6 +27,7 @@ import {
 } from "../shared/utils";
 import { HiMiniChevronLeft, HiMiniChevronRight } from "react-icons/hi2";
 import { IoCloseCircleOutline } from "react-icons/io5";
+import { usePopupPosition } from "../shared/usePopupPosition";
 
 const currentYear = moment().year();
 
@@ -156,6 +157,8 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
     onClose: handleClose,
   });
 
+  const popupPosition = usePopupPosition(pickerState.open, inputRef, popupRef);
+
   return (
     <InputContainer ref={inputRef} key={defaultDates?.join(",")}>
       <StyledInput
@@ -173,7 +176,15 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
         </ClearButton>
       )}
 
-      <Popup ref={popupRef} $open={pickerState.open}>
+      <Popup
+        ref={popupRef}
+        $open={pickerState.open}
+        $top={popupPosition.top}
+        $left={popupPosition.left}
+        $right={popupPosition.right}
+        $position={popupPosition.position}
+      >
+        {" "}
         <div style={{ display: "flex", gap: "7.5px" }}>
           {pickerState.viewYears.map((viewYear, index) => {
             const from = pickerState.from;
