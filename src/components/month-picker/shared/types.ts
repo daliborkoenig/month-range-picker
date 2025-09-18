@@ -23,7 +23,7 @@ export type MonthRangePickerProps = {
   selectableMonths?: DateFormat[];
   minDate?: DateFormat;
   maxDate?: DateFormat;
-  onChange: (value: NonEmptyArray<DateFormat>) => void;
+  onChange: (value: NonEmptyArray<DateFormat> | undefined) => void;
   defaultDates?: NonEmptyArray<DateFormat>;
 };
 
@@ -33,7 +33,7 @@ export type MonthPickerProps = {
   selectableMonths?: DateFormat[];
   minDate?: DateFormat;
   maxDate?: DateFormat;
-  onChange: (value: DateFormat) => void;
+  onChange: (value: DateFormat | undefined) => void;
   defaultDate?: DateFormat;
   disabledMonths?: DateFormat[];
 };

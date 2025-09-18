@@ -64,12 +64,13 @@ export const SingleMonthPicker: FC<MonthPickerProps> = (props) => {
   }, [pickerState.date, months]);
 
   // Handle selection clearing - memoized
-  const clearSelection = useCallback(() => {
+  const handleClear = useCallback(() => {
     updatePickerState((draft) => {
       draft.date = undefined;
       // Reset view year to current year on clear
       draft.viewYear = currentYear;
     });
+    onChange(undefined);
   }, [updatePickerState]);
 
   // Handle month selection - memoized
@@ -120,7 +121,7 @@ export const SingleMonthPicker: FC<MonthPickerProps> = (props) => {
       />
 
       {pickerState.date && (
-        <ClearButton onClick={clearSelection} aria-label="Clear selection">
+        <ClearButton onClick={handleClear} aria-label="Clear selection">
           <IoCloseCircleOutline size={20} />
         </ClearButton>
       )}
