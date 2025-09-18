@@ -184,7 +184,6 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
         $right={popupPosition.right}
         $position={popupPosition.position}
       >
-        {" "}
         <div style={{ display: "flex", gap: "7.5px" }}>
           {pickerState.viewYears.map((viewYear, index) => {
             const from = pickerState.from;
