@@ -16,7 +16,10 @@ export const extractViewYearsFromDefaultDates = (
 /**
  * Generates an array of all months in a given range MM/YYYY
  */
-export const generateMonthRange = (startMonth: DateFormat, endMonth: DateFormat): NonEmptyArray<DateFormat> => {
+export const generateMonthRange = (
+  startMonth: DateFormat,
+  endMonth: DateFormat
+): NonEmptyArray<DateFormat> => {
   const start = moment(startMonth, "MM/YYYY");
   const end = moment(endMonth, "MM/YYYY");
   const result: DateFormat[] = [];
@@ -33,7 +36,7 @@ export const generateMonthRange = (startMonth: DateFormat, endMonth: DateFormat)
 /**
  * Gets short month names for the specified locale
  */
-export const getMonthsShort = (loc: "en" | "de") => {
+export const getMonthsShort = (loc: "en" | "de"): string[] => {
   const m = moment().locale(loc);
   return m
     .localeData()

@@ -16,7 +16,7 @@ export const usePopupPosition = (
   const [position, setPosition] = useState<PopupPosition>({});
 
   useEffect(() => {
-    const calculatePosition = () => {
+    const calculatePosition = (): void => {
       if (!isOpen || !triggerRef.current || !popupRef.current) return;
 
       const triggerRect = triggerRef.current.getBoundingClientRect();
@@ -76,7 +76,7 @@ export const usePopupPosition = (
       });
     };
 
-    const handleScroll = () => {
+    const handleScroll = (): void => {
       if (isOpen) {
         calculatePosition();
       }
@@ -88,7 +88,7 @@ export const usePopupPosition = (
       document.addEventListener("scroll", handleScroll, true);
     }
 
-    return () => {
+    return (): void => {
       window.removeEventListener("resize", calculatePosition);
       document.removeEventListener("scroll", handleScroll, true);
     };

@@ -3,7 +3,7 @@ import { themeColors, manipulateColor } from "../../../theme/defaultColors";
 
 const RADIUS = "7.5px";
 
-const getShadow = () => {
+const getShadow = (): string => {
   return `
     box-shadow: #e5e5e5 0 2px 5px -1px, #a6a6a6 0 1px 3px -1px;
   `;
@@ -21,7 +21,7 @@ export const StyledInput = styled.input(() => {
     border: 1px solid #d1d5db;
     padding: 8px 10px;
     border-radius: ${RADIUS};
-    background: #ffffff;
+    background: #fff;
     color: ${themeColors.text};
     text-align: left;
     cursor: pointer;
@@ -65,12 +65,15 @@ export const Popup = styled.div<{
     transform: ${$open
       ? "translateY(0)"
       : $position === "top"
-      ? "translateY(-10px)"
-      : "translateY(10px)"};
+        ? "translateY(-10px)"
+        : "translateY(10px)"};
     transform-origin: ${transformOrigin};
     visibility: ${$open ? "visible" : "hidden"};
     pointer-events: ${$open ? "auto" : "none"};
-    transition: opacity 300ms, transform 300ms, visibility 0s ${$open ? "0s" : "300ms"};
+    transition:
+      opacity 300ms,
+      transform 300ms,
+      visibility 0s ${$open ? "0s" : "300ms"};
     ${$position === "bottom" && $top !== undefined ? `top: calc(${$top}px + ${margin});` : ""}
     ${$position === "top" && $top !== undefined ? `top: calc(${$top}px - ${margin});` : ""}
     ${$top === undefined ? "top: auto;" : ""}
@@ -84,7 +87,7 @@ export const YearCard = styled.div(() => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #ffffff;
+    background: #fff;
     border-radius: ${RADIUS};
     width: 210px;
     padding: 7.5px;
@@ -92,15 +95,17 @@ export const YearCard = styled.div(() => {
   `;
 });
 
-export const ArrowButton = styled.div(({ theme }) => {
+export const ArrowButton = styled.div(() => {
   return css`
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+
     & > svg {
       color: ${themeColors.text};
     }
+
     &:hover {
       & > svg {
         color: ${manipulateColor(themeColors.text, 80)};
@@ -112,12 +117,11 @@ export const ArrowButton = styled.div(({ theme }) => {
 export const MonthsCard = styled.div(() => {
   return css`
     display: grid;
-    width: 100%;
     height: 100%;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(4, 1fr);
     gap: 7.5px;
-    background: #ffffff;
+    background: #fff;
     border-radius: ${RADIUS};
     aspect-ratio: 1 / 1;
     padding: 8px;
@@ -139,8 +143,8 @@ export const MonthTile = styled.div<{
   const background = $selected
     ? themeColors.secondary
     : $inRange || $hovered
-    ? manipulateColor(themeColors.secondary, 80)
-    : themeColors.text_inverted;
+      ? manipulateColor(themeColors.secondary, 80)
+      : themeColors.text_inverted;
 
   // Calculate text color:
   // - If month has a colored background (selected/range/hovered) use white text
@@ -158,7 +162,9 @@ export const MonthTile = styled.div<{
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.4s ease, color 0.3s ease,
+    transition:
+      background-color 0.4s ease,
+      color 0.3s ease,
       transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     transform: scale(1);
     opacity: ${$disabled ? 0.5 : 1};

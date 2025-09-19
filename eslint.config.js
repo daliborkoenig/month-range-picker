@@ -1,9 +1,9 @@
-const tsParser = require("@typescript-eslint/parser");
-const tsPlugin = require("@typescript-eslint/eslint-plugin");
-const importPathPlugin = require("eslint-plugin-import-path");
-const reactHooksPlugin = require("eslint-plugin-react-hooks");
+import tsParser from "@typescript-eslint/parser";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import importPathPlugin from "eslint-plugin-import-path";
+import reactHooksPlugin from "eslint-plugin-react-hooks";
 
-module.exports = [
+export default [
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
@@ -16,7 +16,7 @@ module.exports = [
     plugins: {
       "@typescript-eslint": tsPlugin,
       "import-path": importPathPlugin,
-      "react-hooks": reactHooksPlugin, // Add the react-hooks plugin
+      "react-hooks": reactHooksPlugin,
     },
     rules: {
       "@typescript-eslint/no-explicit-any": process.env.NODE_ENV === "development" ? 0 : 2,

@@ -85,7 +85,7 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
       draft.viewYears = [currentYear - 1, currentYear];
     });
     onChange(undefined);
-  }, [updatePickerState]);
+  }, [updatePickerState, onChange]);
 
   // Handle month selection - memoized
   const handleSelectDate = useCallback(
@@ -186,8 +186,7 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
       >
         <div style={{ display: "flex", gap: "7.5px" }}>
           {pickerState.viewYears.map((viewYear, index) => {
-            const from = pickerState.from;
-            const to = pickerState.to;
+            const { hoveredMonth, from, to } = pickerState;
 
             return (
               <div
@@ -245,7 +244,7 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
                           date,
                           from,
                           to,
-                          hoveredMonth: pickerState.hoveredMonth,
+                          hoveredMonth,
                         });
 
                         return (
@@ -276,19 +275,7 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
                           </MonthTile>
                         );
                       }),
-                    [
-                      months,
-                      viewYear,
-                      selectableMonths,
-                      minDate,
-                      maxDate,
-                      from,
-                      to,
-                      pickerState.hoveredMonth,
-                      handleSelectDate,
-                      handleDateHover,
-                      index,
-                    ]
+                    [viewYear, from, to, index, hoveredMonth]
                   )}
                 </MonthsCard>
               </div>

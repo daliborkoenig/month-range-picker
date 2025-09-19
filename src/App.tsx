@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { MonthPicker, MonthRangePicker } from "./components/month-picker";
+/* eslint-disable no-console */
+import { FC, useState } from "react";
+import { DropdownPicker, MonthPicker, MonthRangePicker } from "./components/month-picker";
 import moment from "moment";
 import {
   AppWrapper,
@@ -10,30 +11,55 @@ import {
 } from "./globalStyles";
 import { DateFormat, NonEmptyArray } from "./components/month-picker/shared/types";
 import "moment/locale/de";
+import { DropdownItem } from "./components/month-picker/shared/dropdown-types";
 
-const styleText = {
-  fontSize: "10px",
-  paddingLeft: "10px",
+const createDropdownItems = (count: number): DropdownItem[] => {
+  return Array.from({ length: count }, (_, index) => ({
+    text: `Option and some super long text${index + 1}`,
+    value: index + 1,
+  }));
 };
 
-const styleFlex = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "16px",
-};
-
-function App() {
-  const [selectedMonth, setSelectedMonth] = useState<DateFormat>(
+const App: FC = () => {
+  const [selectedMonth, setSelectedMonth] = useState<DateFormat | undefined>(
     moment().format("MM/YYYY") as DateFormat
   );
-  const [selectedRange, setSelectedRange] = useState<NonEmptyArray<DateFormat>>([
+  const [selectedRange, setSelectedRange] = useState<NonEmptyArray<DateFormat> | undefined>([
     moment().format("MM/YYYY") as DateFormat,
     moment().add(14, "month").format("MM/YYYY") as DateFormat,
   ]);
+  const [selectedDropdown, setSelectedDropdown] = useState<number | string | undefined>(1);
 
   return (
     <AppWrapper>
+      <PickerCardSeparator />
+      <PickerCard>
+        <PickerCardTitle size="medium">Dropdown Month Picker</PickerCardTitle>
+        <PickerCardContent>
+          <PickerCardTitle>no default value, controls default value</PickerCardTitle>
+          <DropdownPicker
+            items={createDropdownItems(10)}
+            onChange={(value) => {
+              console.log("Selected:", value);
+              setSelectedDropdown(value);
+            }}
+            defaultValue={1}
+            placeholder="Select an option"
+          />
+          <PickerCardTitle>default value</PickerCardTitle>
+          <DropdownPicker
+            items={[
+              { text: "Option 1", value: 1 },
+              { text: "Option 2", value: 2 },
+              { text: "Option 3", value: "three" },
+            ]}
+            onChange={(value) => console.log("Selected:", value)}
+            defaultValue={selectedDropdown}
+            placeholder="Select an option"
+          />
+        </PickerCardContent>
+      </PickerCard>
+      <PickerCardSeparator />
       <PickerCard>
         <PickerCardTitle size="medium">Single Month Picker</PickerCardTitle>
         <PickerCardContent>
@@ -75,6 +101,6 @@ function App() {
       </PickerCard>
     </AppWrapper>
   );
-}
+};
 
 export default App;

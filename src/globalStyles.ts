@@ -2,15 +2,18 @@ import styled, { createGlobalStyle, css } from "styled-components";
 
 export const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+
   html, body, #root {
     height: 100%;
   }
+
   body {
-    font-family: 'Lato', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-    background: #ffffff;
+    font-family: Lato, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #fff;
     color: #4c4c4c;
     line-height: 1.5;
   }
+
   * {    
     margin: 0;
     box-sizing: border-box;
@@ -24,10 +27,10 @@ export const AppWrapper = styled.div(() => {
   return css`
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: center;
     gap: 16px;
-    background-color: #ffffff;
+    background-color: #fff;
     width: 100%;
     min-height: 100vh;
     box-sizing: border-box;
@@ -36,7 +39,7 @@ export const AppWrapper = styled.div(() => {
 
 export const PickerCard = styled.div(() => {
   return css`
-    background: rgb(255, 255, 255);
+    background: rgb(255 255 255);
     border-radius: ${RADIUS};
     box-shadow: ${ELEVATION};
     padding: 30px;
@@ -66,7 +69,7 @@ export const PickerCardTitle = styled.span<{ size?: "small" | "medium" }>(({ siz
 export const PickerCardSeparator = styled.hr(() => {
   return css`
     width: 30%;
-    background-color: rgb(222, 222, 222);
+    background-color: rgb(222 222 222);
     border: none;
     height: 1px;
   `;

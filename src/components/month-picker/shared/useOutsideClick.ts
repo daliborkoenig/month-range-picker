@@ -17,7 +17,7 @@ export const useOutsideClick = ({ refs, isOpen, onClose }: UseOutsideClickProps)
     // Only add listeners if the component is open
     if (!isOpen) return;
 
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       // Filter out null refs and check if any valid refs contain the click target
       const validRefs = refs.filter((ref) => ref?.current != null);
 
@@ -34,7 +34,7 @@ export const useOutsideClick = ({ refs, isOpen, onClose }: UseOutsideClickProps)
       }
     };
 
-    const handleEscapeKey = (event: KeyboardEvent) => {
+    const handleEscapeKey = (event: KeyboardEvent): void => {
       if (event.key === "Escape") {
         onClose();
       }
@@ -45,7 +45,7 @@ export const useOutsideClick = ({ refs, isOpen, onClose }: UseOutsideClickProps)
     document.addEventListener("keydown", handleEscapeKey);
 
     // Clean up event listeners on unmount or when dependencies change
-    return () => {
+    return (): void => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscapeKey);
     };
