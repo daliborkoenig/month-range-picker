@@ -9,11 +9,10 @@ import {
   PickerCardSeparator,
   PickerCardTitle,
 } from "./globalStyles";
-import { DateFormat, NonEmptyArray } from "./components/month-picker/shared/types";
+import { TDateFormat, TNonEmptyArray, TDropdownItem } from "./components/month-picker/shared/types";
 import "moment/locale/de";
-import { DropdownItem } from "./components/month-picker/shared/dropdown-types";
 
-const createDropdownItems = (count: number): DropdownItem[] => {
+const createDropdownItems = (count: number): TDropdownItem[] => {
   return Array.from({ length: count }, (_, index) => ({
     text: `Option and some super long text${index + 1}`,
     value: index + 1,
@@ -21,12 +20,12 @@ const createDropdownItems = (count: number): DropdownItem[] => {
 };
 
 const App: FC = () => {
-  const [selectedMonth, setSelectedMonth] = useState<DateFormat | undefined>(
-    moment().format("MM/YYYY") as DateFormat
+  const [selectedMonth, setSelectedMonth] = useState<TDateFormat | undefined>(
+    moment().format("MM/YYYY") as TDateFormat
   );
-  const [selectedRange, setSelectedRange] = useState<NonEmptyArray<DateFormat> | undefined>([
-    moment().format("MM/YYYY") as DateFormat,
-    moment().add(14, "month").format("MM/YYYY") as DateFormat,
+  const [selectedRange, setSelectedRange] = useState<TNonEmptyArray<TDateFormat> | undefined>([
+    moment().format("MM/YYYY") as TDateFormat,
+    moment().add(14, "month").format("MM/YYYY") as TDateFormat,
   ]);
   const [selectedDropdown, setSelectedDropdown] = useState<number | string | undefined>(1);
 

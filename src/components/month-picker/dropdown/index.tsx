@@ -1,13 +1,13 @@
 import { useMemo, FC, useRef, useCallback } from "react";
 import { useOutsideClick } from "../shared/useOutsideClick";
 import { useImmer } from "use-immer";
-import { DropDownPickerProps } from "../shared/dropdown-types";
+import { TDropDownPickerProps } from "../shared/types";
 import { InputContainer, StyledInput, ClearButton, Popup } from "../shared/styled-picker";
 import { DropdownList, DropdownItem } from "../shared/dropdown-styled";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { usePopupPosition } from "../shared/usePopupPosition";
 
-export const DropDownPicker: FC<DropDownPickerProps> = (props) => {
+export const DropDownPicker: FC<TDropDownPickerProps> = (props) => {
   const { items, onChange, defaultValue, placeholder = "Select item" } = props;
 
   const inputRef = useRef<HTMLDivElement>(null);

@@ -3,7 +3,7 @@ import { useOutsideClick } from "../shared/useOutsideClick";
 import { useImmer } from "use-immer";
 import moment from "moment";
 import "moment/locale/de";
-import { DateFormat, MonthRangePickerProps } from "../shared/types";
+import { TDateFormat, TMonthRangePickerProps } from "../shared/types";
 import {
   InputContainer,
   StyledInput,
@@ -31,7 +31,7 @@ import { usePopupPosition } from "../shared/usePopupPosition";
 
 const currentYear = moment().year();
 
-export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
+export const RangeMonthPicker: FC<TMonthRangePickerProps> = (props) => {
   const { locale = "de", selectableMonths, minDate, maxDate, onChange, defaultDates } = props;
   const inputRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -39,10 +39,10 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
   // Initialize picker-specific state
   const [pickerState, updatePickerState] = useImmer<{
     viewYears: [number, number];
-    from?: DateFormat;
-    to?: DateFormat;
+    from?: TDateFormat;
+    to?: TDateFormat;
     open: boolean;
-    hoveredMonth?: DateFormat;
+    hoveredMonth?: TDateFormat;
   }>({
     viewYears: extractViewYearsFromDefaultDates(defaultDates),
     from: defaultDates ? defaultDates[0] : undefined,
@@ -89,7 +89,7 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
 
   // Handle month selection - memoized
   const handleSelectDate = useCallback(
-    (date: DateFormat) => {
+    (date: TDateFormat) => {
       const { from, to } = pickerState;
 
       if (!from || (from && to)) {
@@ -118,7 +118,7 @@ export const RangeMonthPicker: FC<MonthRangePickerProps> = (props) => {
 
   // Handle hover for visualization - memoized
   const handleDateHover = useCallback(
-    (month?: DateFormat) => {
+    (month?: TDateFormat) => {
       updatePickerState((draft) => {
         draft.hoveredMonth = month;
       });

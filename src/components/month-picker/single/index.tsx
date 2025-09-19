@@ -3,7 +3,7 @@ import { useOutsideClick } from "../shared/useOutsideClick";
 import { useImmer } from "use-immer";
 import moment from "moment";
 import "moment/locale/de";
-import { DateFormat, MonthPickerProps } from "../shared/types";
+import { TDateFormat, TMonthPickerProps } from "../shared/types";
 import {
   InputContainer,
   StyledInput,
@@ -21,7 +21,7 @@ import { usePopupPosition } from "../shared/usePopupPosition";
 
 const currentYear = moment().year();
 
-export const SingleMonthPicker: FC<MonthPickerProps> = (props) => {
+export const SingleMonthPicker: FC<TMonthPickerProps> = (props) => {
   const {
     locale = "de",
     disabledMonths,
@@ -76,7 +76,7 @@ export const SingleMonthPicker: FC<MonthPickerProps> = (props) => {
 
   // Handle month selection - memoized
   const handleSelectDate = useCallback(
-    (date: DateFormat) => {
+    (date: TDateFormat) => {
       updatePickerState((draft) => {
         draft.date = date;
         draft.open = false;

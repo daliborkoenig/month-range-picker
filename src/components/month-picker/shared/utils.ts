@@ -1,11 +1,11 @@
 import moment from "moment";
-import { DateFormat, MonthObject, NonEmptyArray } from "./types";
+import { TDateFormat, TMonthObject, TNonEmptyArray } from "./types";
 
 /**
  * Extracts view years from default dates
  */
 export const extractViewYearsFromDefaultDates = (
-  defaultDates?: NonEmptyArray<string>
+  defaultDates?: TNonEmptyArray<string>
 ): [number, number] => {
   if (!defaultDates) return [moment().year() - 1, moment().year()];
   const firstYear = defaultDates[0].split("/")[1];
@@ -17,20 +17,20 @@ export const extractViewYearsFromDefaultDates = (
  * Generates an array of all months in a given range MM/YYYY
  */
 export const generateMonthRange = (
-  startMonth: DateFormat,
-  endMonth: DateFormat
-): NonEmptyArray<DateFormat> => {
+  startMonth: TDateFormat,
+  endMonth: TDateFormat
+): TNonEmptyArray<TDateFormat> => {
   const start = moment(startMonth, "MM/YYYY");
   const end = moment(endMonth, "MM/YYYY");
-  const result: DateFormat[] = [];
+  const result: TDateFormat[] = [];
 
   const current = start.clone();
   while (current.isSameOrBefore(end, "month")) {
-    result.push(current.format("MM/YYYY") as DateFormat);
+    result.push(current.format("MM/YYYY") as TDateFormat);
     current.add(1, "month");
   }
 
-  return result as NonEmptyArray<DateFormat>;
+  return result as TNonEmptyArray<TDateFormat>;
 };
 
 /**
@@ -47,14 +47,14 @@ export const getMonthsShort = (loc: "en" | "de"): string[] => {
 /**
  * Formats month and year as MM/YYYY
  */
-export const formatDate = (month: number, year: number): DateFormat => {
-  return `${String(month + 1).padStart(2, "0")}/${year}` as DateFormat;
+export const formatDate = (month: number, year: number): TDateFormat => {
+  return `${String(month + 1).padStart(2, "0")}/${year}` as TDateFormat;
 };
 
 /**
- * Parses MM/YYYY string into a MonthObject
+ * Parses MM/YYYY string into a TMonthObject
  */
-export const parseMonth = (monthStr?: string): MonthObject | null => {
+export const parseMonth = (monthStr?: string): TMonthObject | null => {
   if (!monthStr) return null;
   const parts = monthStr.split("/");
   if (parts.length !== 2) return null;
@@ -127,9 +127,9 @@ export const isDateSelected = ({ date, from, to }: IsDateSelectedProps): boolean
  *  Checks if a month is in range based on various criteria
  */
 type IsDateInRangeProps = {
-  date: DateFormat;
-  from?: DateFormat;
-  to?: DateFormat;
+  date: TDateFormat;
+  from?: TDateFormat;
+  to?: TDateFormat;
 };
 export const isDateInRange = ({ date, from, to }: IsDateInRangeProps): boolean => {
   if (!from || !to) return false;
@@ -142,10 +142,10 @@ export const isDateInRange = ({ date, from, to }: IsDateInRangeProps): boolean =
  * Only shows preselection when "from" is selected but "to" is not yet selected
  */
 type IsDatePreselectedProps = {
-  date: DateFormat;
-  from?: DateFormat;
-  to?: DateFormat;
-  hoveredMonth?: DateFormat;
+  date: TDateFormat;
+  from?: TDateFormat;
+  to?: TDateFormat;
+  hoveredMonth?: TDateFormat;
 };
 
 export const isDatePreselected = ({
