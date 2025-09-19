@@ -3,7 +3,7 @@ import { useOutsideClick } from "../shared/useOutsideClick";
 import { useImmer } from "use-immer";
 import { TDropDownPickerProps } from "../shared/types";
 import { InputContainer, StyledInput, ClearButton, Popup } from "../shared/styled-picker";
-import { DropdownList, DropdownItem } from "../shared/dropdown-styled";
+import { DropdownList, DropdownItem } from "../shared/styled-picker";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { usePopupPosition } from "../shared/usePopupPosition";
 
